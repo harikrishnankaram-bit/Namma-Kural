@@ -1,5 +1,24 @@
 import { MongoClient, Db, Collection, ObjectId } from "mongodb";
+import * as fs from "fs";
+import * as path from "path";
+import * as dotenv from "dotenv";
+
+// Load .env explicitly from project root
+const envPath = path.resolve(process.cwd(), ".env");
+if (fs.existsSync(envPath)) {
+  const result = dotenv.parse(fs.readFileSync(envPath));
+  for (const k in result) {
+    process.env[k] = result[k];
+  }
+}
+
+// Debug: confirm env loaded
+console.log("[DEBUG] Loaded MONGODB_URI:", process.env.MONGODB_URI);
+
 import type { Role, Bilingual, ComplaintStatus } from "@/config/aram";
+
+// Debug: ensure env var loaded
+console.log("[DEBUG] MONGODB_URI:", process.env.MONGODB_URI);
 
 export interface CitizenDoc {
   _id?: ObjectId | undefined;
@@ -285,6 +304,7 @@ function matchQuery(item: any, query: any): boolean {
 
 class MemoryDatabase {
   public citizens = new MemoryCollection<CitizenDoc>();
+  public complaintUpdates = new MemoryCollection<ComplaintUpdateDoc>();
   public complaints = new MemoryCollection<ComplaintDoc>();
   public users = new MemoryCollection<UserDoc>();
   public notifications = new MemoryCollection<NotificationDoc>();
@@ -302,12 +322,16 @@ let client: MongoClient | null = null;
 let clientPromise: Promise<MongoClient> | null = null;
 let useMemoryFallback = false;
 
-const MONGODB_URI = process.env["MONGODB_URI"] || "mongodb://127.0.0.1:27017/aram_constituency";
+const MONGODB_URI = process.env["MONGODB_URI"];
+if (!MONGODB_URI) {
+  throw new Error("MONGODB_URI environment variable is not set");
+}
 
 export async function getDb(): Promise<{
   db: Db | null;
   isMemory: boolean;
   citizens: Collection<CitizenDoc> | MemoryCollection<CitizenDoc>;
+  complaintUpdates: Collection<ComplaintUpdateDoc> | MemoryCollection<ComplaintUpdateDoc>;
   complaints: Collection<ComplaintDoc> | MemoryCollection<ComplaintDoc>;
   users: Collection<UserDoc> | MemoryCollection<UserDoc>;
   notifications: Collection<NotificationDoc> | MemoryCollection<NotificationDoc>;
@@ -323,6 +347,7 @@ export async function getDb(): Promise<{
       db: null,
       isMemory: true,
       citizens: memoryDbSingleton.citizens,
+      complaintUpdates: memoryDbSingleton.complaintUpdates,
       complaints: memoryDbSingleton.complaints,
       users: memoryDbSingleton.users,
       notifications: memoryDbSingleton.notifications,
@@ -338,18 +363,19 @@ export async function getDb(): Promise<{
   try {
     if (!clientPromise) {
       client = new MongoClient(MONGODB_URI, {
-        serverSelectionTimeoutMS: 2000,
-        connectTimeoutMS: 2000,
+        serverSelectionTimeoutMS: 5000,
+        connectTimeoutMS: 5000,
       });
       clientPromise = client.connect();
     }
     const connectedClient = await clientPromise;
-    const db = connectedClient.db();
+    const db = connectedClient.db("aram_constituency");
 
     // Ensure Indexes once connected
     try {
       await db.collection("citizens").createIndex({ mobileNumber: 1 }, { unique: true });
       await db.collection("citizens").createIndex({ citizenId: 1 }, { unique: true });
+      await db.collection('complaintUpdates').createIndex({ complaintId: 1 });
       await db.collection("complaints").createIndex({ complaintId: 1 }, { unique: true });
       await db.collection("complaints").createIndex({ citizenMobile: 1 });
       await db.collection("complaints").createIndex({ status: 1 });
@@ -368,6 +394,7 @@ export async function getDb(): Promise<{
       db,
       isMemory: false,
       citizens: db.collection<CitizenDoc>("citizens"),
+      complaintUpdates: db.collection<ComplaintUpdateDoc>('complaintUpdates'),
       complaints: db.collection<ComplaintDoc>("complaints"),
       users: db.collection<UserDoc>("users"),
       notifications: db.collection<NotificationDoc>("notifications"),
@@ -379,21 +406,9 @@ export async function getDb(): Promise<{
       developmentWorks: db.collection<DevelopmentWorkDoc>("developmentWorks"),
     };
   } catch (err) {
-    console.warn("MongoDB connection unavailable, using resilient in-memory database store:", err);
-    useMemoryFallback = true;
-    return {
-      db: null,
-      isMemory: true,
-      citizens: memoryDbSingleton.citizens,
-      complaints: memoryDbSingleton.complaints,
-      users: memoryDbSingleton.users,
-      notifications: memoryDbSingleton.notifications,
-      appointments: memoryDbSingleton.appointments,
-      otps: memoryDbSingleton.otps,
-      auditLogs: memoryDbSingleton.auditLogs,
-      announcements: memoryDbSingleton.announcements,
-      schemes: memoryDbSingleton.schemes,
-      developmentWorks: memoryDbSingleton.developmentWorks,
-    };
+    // No fallback to in-memory; propagate error
+    console.error("MongoDB connection error:", err);
+    throw err;
+
   }
 }

@@ -20,6 +20,7 @@ import { Route as LayoutSchemesRouteImport } from './routes/_layout.schemes'
 import { Route as LayoutTransparencyRouteImport } from './routes/_layout.transparency'
 import { Route as ApiAppointmentsRouteImport } from './routes/api.appointments'
 import { Route as ApiComplaintsRouteImport } from './routes/api.complaints'
+import { Route as ApiDbTestRouteImport } from './routes/api.db-test'
 import { Route as ApiNotificationsRouteImport } from './routes/api.notifications'
 import { Route as ApiStatsRouteImport } from './routes/api.stats'
 import { Route as LayoutComplaintsRegisterRouteImport } from './routes/_layout.complaints.register'
@@ -91,6 +92,11 @@ const ApiAppointmentsRoute = ApiAppointmentsRouteImport.update({
 const ApiComplaintsRoute = ApiComplaintsRouteImport.update({
   id: '/api/complaints',
   path: '/api/complaints',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiDbTestRoute = ApiDbTestRouteImport.update({
+  id: '/api/db-test',
+  path: '/api/db-test',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiNotificationsRoute = ApiNotificationsRouteImport.update({
@@ -201,6 +207,7 @@ export interface FileRoutesByFullPath {
   '/transparency': typeof LayoutTransparencyRoute
   '/api/appointments': typeof ApiAppointmentsRoute
   '/api/complaints': typeof ApiComplaintsRouteWithChildren
+  '/api/db-test': typeof ApiDbTestRoute
   '/api/notifications': typeof ApiNotificationsRoute
   '/api/stats': typeof ApiStatsRoute
   '/complaints/register': typeof LayoutComplaintsRegisterRoute
@@ -230,6 +237,7 @@ export interface FileRoutesByTo {
   '/transparency': typeof LayoutTransparencyRoute
   '/api/appointments': typeof ApiAppointmentsRoute
   '/api/complaints': typeof ApiComplaintsRouteWithChildren
+  '/api/db-test': typeof ApiDbTestRoute
   '/api/notifications': typeof ApiNotificationsRoute
   '/api/stats': typeof ApiStatsRoute
   '/': typeof LayoutIndexRoute
@@ -262,6 +270,7 @@ export interface FileRoutesById {
   '/_layout/transparency': typeof LayoutTransparencyRoute
   '/api/appointments': typeof ApiAppointmentsRoute
   '/api/complaints': typeof ApiComplaintsRouteWithChildren
+  '/api/db-test': typeof ApiDbTestRoute
   '/api/notifications': typeof ApiNotificationsRoute
   '/api/stats': typeof ApiStatsRoute
   '/_layout/': typeof LayoutIndexRoute
@@ -295,6 +304,7 @@ export interface FileRouteTypes {
     | '/transparency'
     | '/api/appointments'
     | '/api/complaints'
+    | '/api/db-test'
     | '/api/notifications'
     | '/api/stats'
     | '/complaints/register'
@@ -324,6 +334,7 @@ export interface FileRouteTypes {
     | '/transparency'
     | '/api/appointments'
     | '/api/complaints'
+    | '/api/db-test'
     | '/api/notifications'
     | '/api/stats'
     | '/'
@@ -355,6 +366,7 @@ export interface FileRouteTypes {
     | '/_layout/transparency'
     | '/api/appointments'
     | '/api/complaints'
+    | '/api/db-test'
     | '/api/notifications'
     | '/api/stats'
     | '/_layout/'
@@ -380,6 +392,7 @@ export interface RootRouteChildren {
   LayoutRoute: typeof LayoutRouteWithChildren
   ApiAppointmentsRoute: typeof ApiAppointmentsRoute
   ApiComplaintsRoute: typeof ApiComplaintsRouteWithChildren
+  ApiDbTestRoute: typeof ApiDbTestRoute
   ApiNotificationsRoute: typeof ApiNotificationsRoute
   ApiStatsRoute: typeof ApiStatsRoute
   ApiAuthLoginRoute: typeof ApiAuthLoginRoute
@@ -464,6 +477,13 @@ declare module '@tanstack/react-router' {
       path: '/api/complaints'
       fullPath: '/api/complaints'
       preLoaderRoute: typeof ApiComplaintsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/db-test': {
+      id: '/api/db-test'
+      path: '/api/db-test'
+      fullPath: '/api/db-test'
+      preLoaderRoute: typeof ApiDbTestRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/notifications': {
@@ -670,6 +690,7 @@ const rootRouteChildren: RootRouteChildren = {
   LayoutRoute: LayoutRouteWithChildren,
   ApiAppointmentsRoute: ApiAppointmentsRoute,
   ApiComplaintsRoute: ApiComplaintsRouteWithChildren,
+  ApiDbTestRoute: ApiDbTestRoute,
   ApiNotificationsRoute: ApiNotificationsRoute,
   ApiStatsRoute: ApiStatsRoute,
   ApiAuthLoginRoute: ApiAuthLoginRoute,

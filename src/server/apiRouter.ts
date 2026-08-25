@@ -18,6 +18,21 @@ export async function handleApiRequest(request: Request): Promise<Response | nul
   const method = request.method.toUpperCase();
 
   try {
+    // ── 0. GET /api/db-test ──
+    if (pathname === "/api/db-test" && method === "GET") {
+      try {
+        const { db, isMemory } = await getDb();
+        if (isMemory || !db) {
+          return Response.json({ success: true, message: "Using in-memory database store (MongoDB fallback active)" });
+        }
+        await db.command({ ping: 1 });
+        return Response.json({ success: true, message: "MongoDB connected successfully" });
+      } catch (error: any) {
+        console.error("DB test error:", error);
+        return Response.json({ success: false, message: error?.message ?? "Database connection error" }, { status: 500 });
+      }
+    }
+
     // ── 1. POST /api/auth/citizen/otp/request ──
     if (pathname === "/api/auth/citizen/otp/request" && method === "POST") {
       const body = await request.json();
@@ -263,116 +278,123 @@ export async function handleApiRequest(request: Request): Promise<Response | nul
 
     // ── 6. POST /api/complaints ──
     if (pathname === "/api/complaints" && method === "POST") {
-      const body = await request.json();
-      const mobile = String(body.mobileNumber || body.citizenMobile || "").replace(/\D/g, "");
+      try {
+        const body = await request.json();
+        console.log("[COMPLAINT] Request received", body);
+        const mobile = String(body.mobileNumber || body.citizenMobile || "").replace(/\D/g, "");
 
-      const v = validateIndianMobile(mobile);
-      if (!v.valid) {
-        return Response.json({ ok: false, message: v.message || "Invalid mobile number" }, { status: 400 });
-      }
+        const v = validateIndianMobile(mobile);
+        if (!v.valid) {
+          return Response.json({ ok: false, message: v.message || "Invalid mobile number" }, { status: 400 });
+        }
 
-      if (!body.description || !body.address || !body.wardId) {
-        return Response.json({ ok: false, message: "Description, Address, and Ward are required" }, { status: 400 });
-      }
+        if (!body.description || !body.address || !body.wardId) {
+          return Response.json({ ok: false, message: "Description, Address, and Ward are required" }, { status: 400 });
+        }
 
-      const { citizens, complaints, notifications } = await getDb();
-      const now = new Date();
-      const dateStr = now.toISOString().split("T")[0] ?? "2026-08-14";
-      const timeStr = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+        const { citizens, complaints, notifications, complaintUpdates } = await getDb();
+        console.log("[COMPLAINT] Connected to MongoDB");
+        const now = new Date();
+        const dateStr = now.toISOString().split("T")[0] ?? "2026-08-14";
+        const timeStr = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
-      let citizen = await citizens.findOne({ mobileNumber: mobile });
-      if (!citizen) {
-        const citizenId = `CITIZEN-${Date.now()}`;
-        const newCitizen: CitizenDoc = {
-          citizenId,
-          mobileNumber: mobile,
-          fullName: body.citizenName,
-          email: body.citizenEmail,
-          wardId: body.wardId,
-          createdAt: now.toISOString(),
-          updatedAt: now.toISOString(),
-          lastLoginAt: now.toISOString(),
-        };
-        await citizens.insertOne(newCitizen);
-        citizen = newCitizen;
-      } else if (body.citizenName && !citizen.fullName) {
-        await citizens.updateOne(
-          { mobileNumber: mobile },
-          { $set: { fullName: body.citizenName, email: body.citizenEmail, updatedAt: now.toISOString() } },
-        );
-      }
+        let citizen = await citizens.findOne({ mobileNumber: mobile });
+        if (!citizen) {
+          const citizenId = `CITIZEN-${Date.now()}`;
+          const newCitizen: CitizenDoc = {
+            citizenId,
+            mobileNumber: mobile,
+            fullName: body.citizenName,
+            email: body.citizenEmail,
+            wardId: body.wardId,
+            createdAt: now.toISOString(),
+            updatedAt: now.toISOString(),
+            lastLoginAt: now.toISOString(),
+          };
+          await citizens.insertOne(newCitizen);
+          citizen = newCitizen;
+        } else if (body.citizenName && !citizen.fullName) {
+          await citizens.updateOne(
+            { mobileNumber: mobile },
+            { $set: { fullName: body.citizenName, email: body.citizenEmail, updatedAt: now.toISOString() } },
+          );
+        }
 
-      const complaintCount = await complaints.countDocuments({});
-      const serial = String(complaintCount + 1).padStart(6, "0");
-      const complaintId = `ARAM-2026-${serial}`;
+        const complaintCount = await complaints.countDocuments({});
+        const serial = String(complaintCount + 1).padStart(6, "0");
+        const complaintId = `ARAM-2026-${serial}`;
 
-      const catObj = CATEGORIES.find((c) => c.id === body.categoryId);
-      const defaultDept = catObj ? catObj.department : "works";
+        const catObj = CATEGORIES.find((c) => c.id === body.categoryId);
+        const defaultDept = catObj ? catObj.department : "works";
 
-      const initialTimeline: TimelineEntryDoc[] = [
-        {
-          stage: "submitted",
-          label: { en: "Complaint Registered", ta: "புகார் பதிவு செய்யப்பட்டது" },
-          date: dateStr,
-          time: timeStr,
-          note: {
-            en: "Grievance successfully submitted through ARAM Constituency portal.",
-            ta: "அறம் தொகுதி தளம் வழியாக புகார் வெற்றிகரமாக சமர்ப்பிக்கப்பட்டது.",
+        const initialTimeline: TimelineEntryDoc[] = [
+          {
+            stage: "submitted",
+            label: { en: "Complaint Registered", ta: "புகார் பதிவு செய்யப்பட்டது" },
+            date: dateStr,
+            time: timeStr,
+            note: {
+              en: "Grievance successfully submitted through ARAM Constituency portal.",
+              ta: "அறம் தொகுதி தளம் வழியாக புகார் வெற்றிகரமாக சமர்ப்பிக்கப்பட்டது.",
+            },
+            done: true,
           },
-          done: true,
-        },
-      ];
+        ];
 
-      const complaintDoc: ComplaintDoc = {
-        complaintId,
-        citizenId: citizen.citizenId,
-        citizenMobile: mobile,
-        citizenName: body.citizenName || citizen.fullName,
-        citizenEmail: body.citizenEmail || citizen.email,
-        categoryId: body.categoryId || "road",
-        description: body.description,
-        address: body.address,
-        wardId: body.wardId,
-        constituency: "Kolathur (TN-013)",
-        lat: body.lat || 13.0827,
-        lng: body.lng || 80.2707,
-        priority: body.priority || "medium",
-        status: "new",
-        departmentId: defaultDept,
-        beforeImage: body.beforeImage,
-        submittedAt: dateStr,
-        updatedAt: now.toISOString(),
-        timeline: initialTimeline,
-      };
+        const complaintDoc: ComplaintDoc = {
+          complaintId,
+          citizenId: citizen.citizenId,
+          citizenMobile: mobile,
+          citizenName: body.citizenName || citizen.fullName,
+          citizenEmail: body.citizenEmail || citizen.email,
+          categoryId: body.categoryId || "road",
+          description: body.description,
+          address: body.address,
+          wardId: body.wardId,
+          constituency: "Kolathur (TN-013)",
+          lat: body.lat || 13.0827,
+          lng: body.lng || 80.2707,
+          priority: body.priority || "medium",
+          status: "new",
+          departmentId: defaultDept,
+          beforeImage: body.beforeImage,
+          submittedAt: dateStr,
+          updatedAt: now.toISOString(),
+          timeline: initialTimeline,
+        };
 
-      await complaints.insertOne(complaintDoc);
+        try {
+          await complaints.insertOne(complaintDoc);
+          console.log("[COMPLAINT] Inserted complaint", complaintDoc.complaintId);
+        } catch (e) {
+          console.error("[COMPLAINT] Error inserting complaint", e);
+          return Response.json({ ok: false, message: "Failed to store complaint" }, { status: 500 });
+        }
+        try {
+          await complaintUpdates.insertOne({
+            complaintId,
+            status: "Submitted",
+            message: "Complaint Registered Successfully",
+            updatedBy: citizen.citizenId,
+            updatedByRole: "citizen",
+            createdAt: now.toISOString(),
+          });
+        } catch (e) {
+          console.error("[COMPLAINT] Error inserting complaint update", e);
+        }
 
-      // Notification
-      await notifications.insertOne({
-        notificationId: `NOTIF-${Date.now()}`,
-        recipientRole: "citizen",
-        recipientCitizenId: citizen.citizenId,
-        recipientMobile: mobile,
-        complaintId,
-        title: { en: "Complaint Registered Successfully", ta: "புகார் வெற்றிகரமாக பதிவு செய்யப்பட்டது" },
-        body: {
-          en: `Your complaint #${complaintId} has been registered. Track live status anytime.`,
-          ta: `உங்கள் புகார் #${complaintId} பதிவு செய்யப்பட்டது. நிகழ்நேர நிலையை எப்போது வேண்டுமானாலும் கண்காணிக்கலாம்.`,
-        },
-        date: dateStr,
-        read: false,
-        priority: "normal",
-        createdAt: now.toISOString(),
-      });
-
-      return Response.json({
-        ok: true,
-        complaintId,
-        complaint: {
-          id: complaintId,
-          ...complaintDoc,
-        },
-      });
+        return Response.json({
+          ok: true,
+          complaintId,
+          complaint: {
+            id: complaintId,
+            ...complaintDoc,
+          },
+        });
+      } catch (e) {
+        console.error("[COMPLAINT] Unexpected error", e);
+        return Response.json({ ok: false, message: "Internal server error" }, { status: 500 });
+      }
     }
 
     // ── 7. GET /api/complaints/:id & PATCH /api/complaints/:id ──
