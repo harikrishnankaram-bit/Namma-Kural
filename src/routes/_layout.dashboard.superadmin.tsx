@@ -242,7 +242,7 @@ export function SuperAdminDashboard() {
           <div>
             <div className="flex items-center gap-2 flex-wrap">
               <h1 className="text-xl sm:text-2xl font-black text-foreground font-display">
-                ARAM Super Admin Command
+                NAMMA KURAL Super Admin Command
               </h1>
               <Badge className="bg-purple-100 text-purple-800 border-0 text-xs font-bold">
                 Platform Root Access

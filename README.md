@@ -10,8 +10,7 @@ Citizen-first Digital Governance Platform
 
 The application should help citizens communicate with their constituency office, report civic problems, track resolution, discover government schemes, book appointments, receive public updates, and understand ongoing constituency development.
 
-The platform must be accessible in:
-
+The platform must be accessible in
 English
 
 Tamil

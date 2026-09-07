@@ -41,11 +41,13 @@ function ContentAdminConsole() {
     fetchAnnouncements,
     createAnnouncement,
     updateAnnouncement,
+    deleteAnnouncement,
     fetchSchemes,
     createScheme,
     fetchDevelopmentWorks,
     createDevelopmentWork,
     updateDevelopmentWork,
+    deleteDevelopmentWork,
   } = useWorkflow();
 
   const [announcements, setAnnouncements] = useState<AnnouncementItem[]>([]);
@@ -62,7 +64,7 @@ function ContentAdminConsole() {
   const [annDescTa, setAnnDescTa] = useState("");
   const [annDate, setAnnDate] = useState(new Date().toISOString().split("T")[0]!);
   const [annTime, setAnnTime] = useState("10:00 AM");
-  const [annLocation, setAnnLocation] = useState("ARAM Community Center, Ward 110");
+  const [annLocation, setAnnLocation] = useState("Community Center, Ward 110");
   const [annCategory, setAnnCategory] = useState("health");
 
   // Create Scheme Modal
@@ -189,7 +191,7 @@ function ContentAdminConsole() {
             </h1>
           </div>
           <p className="text-xs sm:text-sm text-muted-foreground">
-            Manage live Announcements, Welfare Schemes, and Infrastructure Development Works for ARAM Constituency.
+            Manage live Announcements, Welfare Schemes, and Infrastructure Development Works for NAMMA KURAL Constituency.
           </p>
         </div>
 
@@ -261,6 +263,20 @@ function ContentAdminConsole() {
                     <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px]">
                       Published
                     </Badge>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={async () => {
+                        if (confirm("Are you sure you want to delete this announcement?")) {
+                          await deleteAnnouncement(item.announcementId);
+                          loadAll();
+                        }
+                      }}
+                      className="h-7 text-xs text-rose-600 hover:text-rose-700 hover:bg-rose-50 px-2 rounded-lg gap-1"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                      <span>Delete</span>
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -340,6 +356,22 @@ function ContentAdminConsole() {
                   </div>
                   <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
                     <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${work.progressPercent}%` }} />
+                  </div>
+                  <div className="pt-2 flex justify-end">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={async () => {
+                        if (confirm("Are you sure you want to delete this development project?")) {
+                          await deleteDevelopmentWork(work.workId);
+                          loadAll();
+                        }
+                      }}
+                      className="h-7 text-xs text-rose-600 hover:text-rose-700 hover:bg-rose-50 px-2 rounded-lg gap-1"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                      <span>Delete</span>
+                    </Button>
                   </div>
                 </div>
               </Card>

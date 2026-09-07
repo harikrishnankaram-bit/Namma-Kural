@@ -194,14 +194,20 @@ function AppointmentsPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          fullName: fullName.trim(),
           citizenName: fullName.trim(),
           mobileNumber: mobile.replace(/\D/g, ""),
+          mobile: mobile.replace(/\D/g, ""),
           email: email.trim() || undefined,
           wardId,
           purpose: selectedPurpose.en,
           preferredDate,
+          appointmentDate: preferredDate,
           preferredTime,
+          appointmentTime: preferredTime,
           description: description.trim(),
+          location: "MLA Constituency Office, Thousand Lights, Chennai",
+          venue: "MLA Constituency Office, Thousand Lights, Chennai",
           relatedComplaintId: relatedComplaintId || undefined,
         }),
       });
@@ -260,7 +266,7 @@ function AppointmentsPage() {
         <Card className="border-border shadow-soft bg-white rounded-3xl overflow-hidden text-left mb-8">
           <div className="bg-primary/5 px-6 py-4 border-b border-border/80 flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-              {lang === "ta" ? "சந்திப்பு எண்" : "ARAM Appointment ID"}
+              {lang === "ta" ? "சந்திப்பு எண்" : "Appointment ID"}
             </span>
             <Badge className="bg-amber-100 text-amber-800 border-0 font-bold text-xs">
               {lang === "ta" ? "பரிசீலனையில்" : "Pending Review"}
@@ -278,7 +284,7 @@ function AppointmentsPage() {
               </div>
               <div>
                 <span className="text-muted-foreground">{lang === "ta" ? "மொபைல்" : "Mobile"}:</span>
-                <p className="font-bold text-foreground mt-0.5">+91 {maskMobile(submittedAppt.mobileNumber)}</p>
+                <p className="font-bold text-foreground mt-0.5">+91 {maskMobile(submittedAppt.mobile || submittedAppt.mobileNumber)}</p>
               </div>
               <div>
                 <span className="text-muted-foreground">{lang === "ta" ? "சந்திப்பு நோக்கம்" : "Purpose"}:</span>
@@ -287,7 +293,7 @@ function AppointmentsPage() {
               <div>
                 <span className="text-muted-foreground">{lang === "ta" ? "விருப்ப நேரம்" : "Date & Time"}:</span>
                 <p className="font-bold text-foreground mt-0.5">
-                  {submittedAppt.preferredDate} · {submittedAppt.preferredTime}
+                  {submittedAppt.appointmentDate || submittedAppt.preferredDate} · {submittedAppt.appointmentTime || submittedAppt.preferredTime}
                 </p>
               </div>
               <div className="col-span-2">
@@ -335,17 +341,14 @@ function AppointmentsPage() {
   // SINGLE UNIFIED APPOINTMENT FORM & HISTORY TABS
   // ════════════════════════════════════════════════════════════════════════
   return (
-    <div 
-      className="min-h-screen bg-cover bg-center bg-scroll sm:bg-fixed bg-no-repeat"
-      style={{ backgroundImage: "url('/mla.png')" }}
-    >
-      <div className="mx-auto max-w-3xl px-4 py-8 sm:py-12 pb-20 bg-white/30 sm:bg-white/80 backdrop-blur-sm min-h-screen">
+    <div className="min-h-screen bg-[#f9f6f0] py-4 sm:py-6">
+      <div className="mx-auto max-w-3xl px-4 py-8 sm:py-12 pb-20 bg-white min-h-screen rounded-3xl shadow-xl text-slate-950 border border-stone-200/80">
       {/* ── Page Header ── */}
       <div className="mb-6">
-        <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight font-display">
+        <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight font-display">
           {lang === "ta" ? "சட்டமன்ற உறுப்பினருடன் சந்திப்பு" : "Meet Your MLA — Book Appointment"}
         </h1>
-        <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+        <p className="text-xs sm:text-sm text-slate-800 font-semibold mt-1">
           {lang === "ta"
             ? "தொகுதி விவகாரங்கள், கோரிக்கைகள் மற்றும் உதவிகளுக்கு மாண்புமிகு சட்டமன்ற உறுப்பினருடன் நேரடி சந்திப்பை முன்பதிவு செய்க."
             : "Request an official meeting appointment with your Member of Legislative Assembly to discuss constituency issues."}
@@ -353,27 +356,27 @@ function AppointmentsPage() {
       </div>
 
       {/* MLA Profile Card */}
-      <div className="rounded-3xl border border-rose-200/80 bg-gradient-to-r from-rose-50/60 via-white to-rose-50/30 p-5 sm:p-6 shadow-sm mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="rounded-3xl border border-rose-200/80 bg-gradient-to-r from-rose-50/80 via-white to-rose-50/50 p-5 sm:p-6 shadow-sm mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3.5">
           <div className="h-12 w-12 rounded-2xl bg-rose-600 text-white flex items-center justify-center font-bold text-lg shrink-0 shadow-sm">
             <User className="h-6 w-6" />
           </div>
           <div>
-            <h2 className="text-base font-bold text-foreground">{bi(MLA.name)}</h2>
-            <p className="text-xs text-muted-foreground">{bi(MLA.role)}</p>
-            <p className="text-[11px] text-rose-700 font-semibold mt-0.5 flex items-center gap-1">
+            <h2 className="text-base font-black text-slate-950">{bi(MLA.name)}</h2>
+            <p className="text-xs text-slate-700 font-bold">{bi(MLA.role)}</p>
+            <p className="text-[11px] text-rose-800 font-bold mt-0.5 flex items-center gap-1">
               <Clock className="h-3 w-3" /> {bi(MLA.officeHours)}
             </p>
           </div>
         </div>
 
         {/* Tab Switcher: Book / History */}
-        <div className="flex items-center gap-1 bg-white p-1 rounded-xl border border-border shrink-0">
+        <div className="flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-300 shrink-0">
           <button
             type="button"
             onClick={() => setActiveTab("book")}
-            className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-colors ${
-              activeTab === "book" ? "bg-primary text-primary-foreground shadow-xs" : "text-muted-foreground hover:text-foreground"
+            className={`px-3.5 py-2 rounded-lg text-xs font-black transition-colors ${
+              activeTab === "book" ? "bg-primary text-white shadow-xs" : "text-slate-700 hover:text-slate-950"
             }`}
           >
             {lang === "ta" ? "முன்பதிவு" : "Book Appointment"}
@@ -381,8 +384,8 @@ function AppointmentsPage() {
           <button
             type="button"
             onClick={() => setActiveTab("history")}
-            className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-colors ${
-              activeTab === "history" ? "bg-primary text-primary-foreground shadow-xs" : "text-muted-foreground hover:text-foreground"
+            className={`px-3.5 py-2 rounded-lg text-xs font-black transition-colors ${
+              activeTab === "history" ? "bg-primary text-white shadow-xs" : "text-slate-700 hover:text-slate-950"
             }`}
           >
             {lang === "ta" ? "என் சந்திப்புகள்" : "My Appointments"}
@@ -396,25 +399,25 @@ function AppointmentsPage() {
       {activeTab === "history" ? (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold text-foreground">
+            <h3 className="text-sm font-black text-slate-950">
               {lang === "ta" ? "உங்கள் முந்தைய சந்திப்பு கோரிக்கைகள்" : "Your Appointment Requests"}
             </h3>
-            <Button size="sm" variant="outline" className="text-xs font-bold rounded-xl" onClick={() => setActiveTab("book")}>
+            <Button size="sm" variant="outline" className="text-xs font-bold rounded-xl text-slate-900 border-slate-300 bg-white" onClick={() => setActiveTab("book")}>
               + {lang === "ta" ? "புதிய சந்திப்பு" : "Book New Request"}
             </Button>
           </div>
 
           {loadingHistory ? (
-            <div className="p-8 text-center text-xs text-muted-foreground">
+            <div className="p-8 text-center text-xs text-slate-700 font-bold">
               {lang === "ta" ? "சந்திப்புகள் ஏற்றப்படுகின்றன..." : "Loading appointments..."}
             </div>
           ) : appointmentsList.length === 0 ? (
-            <div className="p-10 text-center border border-dashed border-border rounded-3xl bg-muted/20 space-y-2">
-              <Calendar className="h-8 w-8 text-muted-foreground/50 mx-auto" />
-              <p className="text-sm font-bold text-foreground">
+            <div className="p-10 text-center border border-dashed border-slate-300 rounded-3xl bg-slate-50/80 space-y-2">
+              <Calendar className="h-8 w-8 text-slate-400 mx-auto" />
+              <p className="text-sm font-black text-slate-950">
                 {lang === "ta" ? "முன்பதிவு செய்யப்பட்ட சந்திப்புகள் எதுவும் இல்லை" : "No appointments found"}
               </p>
-              <p className="text-xs text-muted-foreground max-w-sm mx-auto">
+              <p className="text-xs text-slate-700 font-medium max-w-sm mx-auto">
                 {lang === "ta"
                   ? "சட்டமன்ற உறுப்பினருடன் புதிய சந்திப்பை முன்பதிவு செய்ய மேலே உள்ள படிவத்தைப் பயன்படுத்தவும்."
                   : "You haven't requested any MLA appointments yet. Use the Book Appointment tab to request a slot."}
@@ -454,11 +457,11 @@ function AppointmentsPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-2 border-t border-border/60 text-xs text-muted-foreground">
                     <div className="flex items-center gap-1.5">
                       <Clock className="h-3.5 w-3.5 text-primary" />
-                      <span>{item.confirmedDate || item.preferredDate} · {item.confirmedTime || item.preferredTime}</span>
+                      <span>{item.confirmedDate || item.appointmentDate || item.preferredDate} · {item.confirmedTime || item.appointmentTime || item.preferredTime}</span>
                     </div>
                     <div className="flex items-center gap-1.5">
                       <MapPin className="h-3.5 w-3.5 text-primary" />
-                      <span className="truncate">{item.meetingLocation || "MLA Constituency Office"}</span>
+                      <span className="truncate">{item.venue || item.meetingLocation || "MLA Constituency Office"}</span>
                     </div>
                     {item.relatedComplaintId && (
                       <div className="flex items-center gap-1.5">
@@ -493,18 +496,18 @@ function AppointmentsPage() {
             
             {/* ── SECTION 1: CITIZEN DETAILS ── */}
             <div className="space-y-4">
-              <div className="flex items-center gap-2 border-b border-border/60 pb-2">
+              <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
                 <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-white text-xs font-bold">
                   1
                 </span>
-                <h3 className="text-sm sm:text-base font-bold text-foreground">
+                <h3 className="text-sm sm:text-base font-black text-slate-950">
                   {lang === "ta" ? "குடிமக்கள் விவரங்கள்" : "Citizen Details"}
                 </h3>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-foreground">
+                  <label className="text-xs font-bold text-slate-950">
                     {lang === "ta" ? "முழு பெயர் *" : "Full Name *"}
                   </label>
                   <Input
@@ -514,17 +517,17 @@ function AppointmentsPage() {
                       setErrors((err) => ({ ...err, name: undefined }));
                     }}
                     placeholder="e.g. Priya Raman"
-                    className="h-11 rounded-xl text-xs sm:text-sm"
+                    className="h-11 rounded-xl text-xs sm:text-sm text-slate-950 font-semibold bg-white border-slate-300 placeholder:text-slate-400"
                   />
                   {errors.name && <p className="text-xs text-destructive font-medium">{errors.name}</p>}
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-foreground">
+                  <label className="text-xs font-bold text-slate-950">
                     {lang === "ta" ? "மொபைல் எண் *" : "Mobile Number *"}
                   </label>
                   <div className="flex gap-2">
-                    <div className="flex h-11 items-center justify-center rounded-xl border border-input bg-muted px-3 text-xs font-bold">
+                    <div className="flex h-11 items-center justify-center rounded-xl border border-slate-300 bg-slate-100 px-3 text-xs font-black text-slate-900">
                       +91
                     </div>
                     <Input
@@ -536,14 +539,14 @@ function AppointmentsPage() {
                         setErrors((err) => ({ ...err, mobile: undefined }));
                       }}
                       placeholder="98765 43210"
-                      className="h-11 rounded-xl text-xs sm:text-sm flex-1"
+                      className="h-11 rounded-xl text-xs sm:text-sm text-slate-950 font-semibold bg-white border-slate-300 placeholder:text-slate-400 flex-1"
                     />
                   </div>
                   {errors.mobile && <p className="text-xs text-destructive font-medium">{errors.mobile}</p>}
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-foreground">
+                  <label className="text-xs font-bold text-slate-950">
                     {lang === "ta" ? "மின்னஞ்சல் முகவரி (விருப்பத்திற்குரியது)" : "Email Address (Optional)"}
                   </label>
                   <Input
@@ -551,18 +554,18 @@ function AppointmentsPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="e.g. citizen@example.com"
-                    className="h-11 rounded-xl text-xs sm:text-sm"
+                    className="h-11 rounded-xl text-xs sm:text-sm text-slate-950 font-semibold bg-white border-slate-300 placeholder:text-slate-400"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-foreground">
+                  <label className="text-xs font-bold text-slate-950">
                     {lang === "ta" ? "வார்டு *" : "Ward *"}
                   </label>
                   <select
                     value={wardId}
                     onChange={(e) => setWardId(e.target.value)}
-                    className="h-11 w-full rounded-xl border border-input bg-background px-3 text-xs sm:text-sm font-medium"
+                    className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-xs sm:text-sm font-semibold text-slate-950"
                   >
                     {WARDS.map((w) => (
                       <option key={w.id} value={w.id}>
@@ -576,11 +579,11 @@ function AppointmentsPage() {
 
             {/* ── SECTION 2: PURPOSE OF MEETING ── */}
             <div className="space-y-4">
-              <div className="flex items-center gap-2 border-b border-border/60 pb-2">
+              <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
                 <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-white text-xs font-bold">
                   2
                 </span>
-                <h3 className="text-sm sm:text-base font-bold text-foreground">
+                <h3 className="text-sm sm:text-base font-black text-slate-950">
                   {lang === "ta" ? "சந்திப்பின் நோக்கம்" : "Purpose of Meeting"}
                 </h3>
               </div>
@@ -594,10 +597,10 @@ function AppointmentsPage() {
                         key={p.id}
                         type="button"
                         onClick={() => setPurposeId(p.id)}
-                        className={`px-3 py-2.5 rounded-xl border text-xs font-semibold transition-all text-left truncate ${
+                        className={`px-3 py-2.5 rounded-xl border text-xs font-bold transition-all text-left truncate ${
                           isSelected
-                            ? "border-primary bg-primary/10 text-primary font-bold shadow-xs"
-                            : "border-border hover:border-primary/40 text-foreground bg-white"
+                            ? "border-primary bg-primary/10 text-primary font-black shadow-xs"
+                            : "border-slate-300 hover:border-primary/40 text-slate-900 bg-white"
                         }`}
                       >
                         {lang === "ta" ? p.ta : p.en}
@@ -607,7 +610,7 @@ function AppointmentsPage() {
                 </div>
 
                 <div className="space-y-1.5 pt-2">
-                  <label className="text-xs font-bold text-foreground">
+                  <label className="text-xs font-bold text-slate-950">
                     {lang === "ta" ? "சந்திப்பின் காரணத்தை சுருக்கமாக விவரிக்கவும் *" : "Brief Description / Subject *"}
                   </label>
                   <Textarea
@@ -622,7 +625,7 @@ function AppointmentsPage() {
                         : "Please describe the reason for your appointment and what support or action you are requesting from the MLA..."
                     }
                     rows={3}
-                    className="resize-none text-xs sm:text-sm rounded-2xl border-border"
+                    className="resize-none text-xs sm:text-sm rounded-2xl border-slate-300 text-slate-950 font-semibold bg-white placeholder:text-slate-400"
                   />
                   {errors.description && <p className="text-xs text-destructive font-medium">{errors.description}</p>}
                 </div>
@@ -630,14 +633,14 @@ function AppointmentsPage() {
                 {/* Optional: Link an existing complaint */}
                 {citizenComplaints.length > 0 && (
                   <div className="space-y-1.5 pt-2">
-                    <label className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                    <label className="text-xs font-bold text-slate-950 flex items-center gap-1.5">
                       <FileText className="h-3.5 w-3.5 text-primary" />
                       <span>{lang === "ta" ? "தொடர்புடைய புகார் (விருப்பத்திற்குரியது)" : "Link an Existing Complaint (Optional)"}</span>
                     </label>
                     <select
                       value={relatedComplaintId}
                       onChange={(e) => setRelatedComplaintId(e.target.value)}
-                      className="h-11 w-full rounded-xl border border-input bg-background px-3 text-xs font-medium"
+                      className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-xs font-semibold text-slate-950"
                     >
                       <option value="">No related complaint</option>
                       {citizenComplaints.map((c) => (
@@ -653,18 +656,18 @@ function AppointmentsPage() {
 
             {/* ── SECTION 3: PREFERRED DATE & TIME ── */}
             <div className="space-y-4">
-              <div className="flex items-center gap-2 border-b border-border/60 pb-2">
+              <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
                 <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-white text-xs font-bold">
                   3
                 </span>
-                <h3 className="text-sm sm:text-base font-bold text-foreground">
+                <h3 className="text-sm sm:text-base font-black text-slate-950">
                   {lang === "ta" ? "விருப்பமான தேதி மற்றும் நேரம்" : "Preferred Appointment Slot"}
                 </h3>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-foreground">
+                  <label className="text-xs font-bold text-slate-950">
                     {lang === "ta" ? "விருப்பமான தேதி *" : "Preferred Date *"}
                   </label>
                   <Input
@@ -675,13 +678,13 @@ function AppointmentsPage() {
                       setPreferredDate(e.target.value);
                       setErrors((err) => ({ ...err, date: undefined }));
                     }}
-                    className="h-11 rounded-xl text-xs sm:text-sm font-semibold"
+                    className="h-11 rounded-xl text-xs sm:text-sm text-slate-950 font-semibold bg-white border-slate-300 placeholder:text-slate-400"
                   />
                   {errors.date && <p className="text-xs text-destructive font-medium">{errors.date}</p>}
                 </div>
 
                 <div className="space-y-1.5 sm:col-span-2">
-                  <label className="text-xs font-bold text-foreground">
+                  <label className="text-xs font-bold text-slate-950">
                     {lang === "ta" ? "விருப்பமான நேரம் *" : "Preferred Time Slot *"}
                   </label>
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 pt-1">
@@ -698,12 +701,12 @@ function AppointmentsPage() {
                               setErrors((err) => ({ ...err, time: undefined }));
                             }
                           }}
-                          className={`h-10 rounded-xl border text-xs font-bold transition-all ${
+                          className={`h-10 rounded-xl border text-xs transition-all ${
                             !available
-                              ? "opacity-40 cursor-not-allowed bg-muted text-muted-foreground border-border"
+                              ? "opacity-40 cursor-not-allowed bg-slate-100 text-slate-400 border-slate-200"
                               : isSelected
-                              ? "border-primary bg-primary text-primary-foreground shadow-sm"
-                              : "border-border hover:border-primary/40 text-foreground bg-white"
+                              ? "border-[#d91c2b] bg-[#d91c2b] text-white shadow-sm font-black"
+                              : "border-slate-300 hover:border-[#d91c2b]/40 text-slate-900 bg-white hover:bg-slate-50 font-bold"
                           }`}
                         >
                           {time}
@@ -717,23 +720,23 @@ function AppointmentsPage() {
             </div>
 
             {/* ── SECTION 4: SUBMIT & PREVIEW ── */}
-            <div className="space-y-4 pt-4 border-t border-border/80">
-              <div className="rounded-2xl bg-muted/40 p-4 border border-border/80 text-xs space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Citizen Name:</span>
-                  <span className="font-bold text-foreground">{fullName || "—"}</span>
+            <div className="space-y-4 pt-4 border-t border-slate-200">
+              <div className="rounded-2xl bg-slate-50 p-4 border border-slate-200 text-xs space-y-2.5">
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-600 font-semibold">Citizen Name:</span>
+                  <span className="font-bold text-slate-950">{fullName || "—"}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Mobile Number:</span>
-                  <span className="font-bold text-foreground">{mobile || "—"}</span>
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-600 font-semibold">Mobile Number:</span>
+                  <span className="font-bold text-slate-950">{mobile || "—"}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Purpose:</span>
-                  <span className="font-bold text-foreground">{lang === "ta" ? selectedPurpose.ta : selectedPurpose.en}</span>
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-600 font-semibold">Purpose:</span>
+                  <span className="font-bold text-slate-950">{lang === "ta" ? selectedPurpose.ta : selectedPurpose.en}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Requested Slot:</span>
-                  <span className="font-bold text-primary">{preferredDate} at {preferredTime}</span>
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-600 font-semibold">Requested Slot:</span>
+                  <span className="font-black text-[#d91c2b]">{preferredDate} at {preferredTime}</span>
                 </div>
               </div>
 
@@ -741,7 +744,7 @@ function AppointmentsPage() {
                 type="submit"
                 size="lg"
                 disabled={submitting}
-                className="w-full h-12 rounded-xl font-bold bg-rose-600 hover:bg-rose-700 text-white shadow-md text-sm gap-2 mt-4"
+                className="w-full h-12 rounded-xl font-bold bg-[#d91c2b] hover:bg-[#b81220] text-white shadow-md text-sm gap-2 mt-4"
               >
                 {submitting ? (
                   <span>Submitting...</span>

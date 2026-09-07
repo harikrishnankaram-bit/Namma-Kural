@@ -203,24 +203,24 @@ function CitizenMobileLoginCard({
 
       <div className="relative space-y-1">
         <div className="flex items-center justify-between">
-          <Badge className="bg-primary/10 text-primary border-0 text-[11px] font-bold px-3 py-1">
-            <User className="h-3 w-3 mr-1" />
+          <Badge className="bg-red-700 text-white border-0 text-[11px] font-black px-3 py-1 shadow-2xs">
+            <User className="h-3 w-3 mr-1 text-amber-400" />
             {lang === "ta" ? "குடிமகன் உள்நுழைவு" : "Citizen Login"}
           </Badge>
           <Badge
             variant="outline"
-            className="text-[10px] text-muted-foreground gap-1"
+            className="text-[10px] text-slate-700 border-slate-300 font-bold gap-1"
           >
-            <ShieldCheck className="h-3 w-3" />
+            <ShieldCheck className="h-3 w-3 text-emerald-600" />
             {lang === "ta" ? "OTP பாதுகாப்பு" : "OTP Secured"}
           </Badge>
         </div>
-        <h2 className="text-xl sm:text-2xl font-black text-foreground font-display tracking-tight pt-1">
+        <h2 className="text-xl sm:text-2xl font-black text-slate-950 font-display tracking-tight pt-1">
           {lang === "ta"
             ? "உங்கள் மொபைல் எண்ணைக் கொண்டு உள்நுழையவும்"
             : "Sign in with your Mobile Number"}
         </h2>
-        <p className="text-xs sm:text-sm text-muted-foreground font-medium">
+        <p className="text-xs sm:text-sm text-slate-800 font-medium">
           {lang === "ta"
             ? "பிரத்யேக பயனர் பெயர் அல்லது கடவுச்சொல் தேவையில்லை. OTP எளிதாக உள்நுழையவும்."
             : "No username or password needed. Simply verify with an OTP to track your complaints."}
@@ -230,16 +230,16 @@ function CitizenMobileLoginCard({
       {successMsg && stage === "otp" && (
         <div className="relative flex items-start gap-2 p-3 rounded-2xl bg-emerald-50 border border-emerald-200">
           <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
-          <div className="text-xs text-emerald-800 font-semibold leading-snug">
+          <div className="text-xs text-emerald-800 font-bold leading-snug">
             {successMsg}
           </div>
         </div>
       )}
 
       {error && (
-        <div className="relative flex items-start gap-2 p-3 rounded-2xl bg-destructive/10 border border-destructive/20">
-          <AlertCircle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
-          <div className="text-xs text-destructive font-semibold leading-snug">
+        <div className="relative flex items-start gap-2 p-3 rounded-2xl bg-red-50 border border-red-200">
+          <AlertCircle className="h-4 w-4 text-red-600 shrink-0 mt-0.5" />
+          <div className="text-xs text-red-800 font-bold leading-snug">
             {error}
           </div>
         </div>
@@ -248,12 +248,12 @@ function CitizenMobileLoginCard({
       {stage === "mobile" ? (
         <form onSubmit={handleRequestOtp} className="relative space-y-4">
           <div className="space-y-2">
-            <Label className="text-xs font-bold text-foreground flex items-center gap-1.5">
+            <Label className="text-xs font-black text-slate-950 flex items-center gap-1.5">
               <Phone className="h-3.5 w-3.5 text-primary" />
               {lang === "ta" ? "மொபைல் எண் *" : "Mobile Number *"}
             </Label>
             <div className="relative">
-              <div className="absolute left-0 top-0 bottom-0 w-14 flex items-center justify-center border-r border-border bg-muted/40 rounded-l-xl text-sm font-bold text-foreground">
+              <div className="absolute left-0 top-0 bottom-0 w-14 flex items-center justify-center border-r border-slate-300 bg-slate-100 rounded-l-xl text-sm font-black text-slate-800">
                 +91
               </div>
               <Input
@@ -269,10 +269,10 @@ function CitizenMobileLoginCard({
                   setError("");
                 }}
                 placeholder={lang === "ta" ? "98765 43210" : "98765 43210"}
-                className="h-12 rounded-xl pl-16 text-base font-semibold tracking-wider"
+                className="h-12 rounded-xl pl-16 text-base font-bold text-slate-950 bg-white border-2 border-slate-300 placeholder:text-slate-400 tracking-wider"
               />
             </div>
-            <p className="text-[11px] text-muted-foreground leading-relaxed">
+            <p className="text-[11px] text-slate-700 font-medium leading-relaxed">
               {lang === "ta"
                 ? "உங்கள் மொபைல் எண் புகார் பதிவு செய்யப்பட்டது இருக்க வேண்டும். இல்லையெனில், முதலில் புகாரை பதிவு செய்யவும்."
                 : "This mobile must already have at least one complaint registered. If not, please report a complaint first."}
@@ -535,17 +535,17 @@ function OfficerRoleLoginCard({ onBack }: { onBack: () => void }) {
           <button
             type="button"
             onClick={onBack}
-            className="text-[11px] text-muted-foreground hover:text-foreground font-semibold flex items-center gap-1"
+            className="text-[11px] text-slate-700 hover:text-slate-950 font-bold flex items-center gap-1"
           >
             ← {lang === "ta" ? "குடிமகன் உள்நுழைவு" : "Citizen Login"}
           </button>
         </div>
-        <h2 className="text-xl sm:text-2xl font-black text-foreground font-display tracking-tight pt-1">
+        <h2 className="text-xl sm:text-2xl font-black text-slate-950 font-display tracking-tight pt-1">
           {lang === "ta"
             ? "பணியாளர் கண்ணில் உள்நுழைய"
             : "Authorized Personnel Sign In"}
         </h2>
-        <p className="text-xs sm:text-sm text-muted-foreground font-medium">
+        <p className="text-xs sm:text-sm text-slate-800 font-medium">
           {lang === "ta"
             ? "பொறுப்பு சார்ந்த அங்கீகாரம் கொண்ட நிர்வாகிகள் மற்றும் பணியாளர்கள் மட்டும். தயவுசெய்து உங்கள் சான்றுகளை உள்ளிடவும்."
             : "Restricted to role-based personnel only. Please enter your credentials below."}
@@ -564,14 +564,14 @@ function OfficerRoleLoginCard({ onBack }: { onBack: () => void }) {
       <form onSubmit={handleLogin} className="space-y-4">
         {/* Role selector */}
         <div className="space-y-1.5">
-          <Label className="text-xs font-bold text-foreground flex items-center gap-1.5">
+          <Label className="text-xs font-bold text-slate-950 flex items-center gap-1.5">
             <Briefcase className="h-3.5 w-3.5 text-indigo-600" />
             {lang === "ta" ? "பங்கு *" : "Role *"}
           </Label>
           <select
             value={selectedRole}
             onChange={(e) => setSelectedRole(e.target.value as Role)}
-            className="h-11 rounded-xl w-full pl-3 text-sm border border-border bg-white"
+            className="h-11 rounded-xl w-full pl-3 text-sm border border-slate-300 bg-white text-slate-950 font-semibold"
           >
             <option value="field_officer">
               {lang === "ta" ? "கள அலுவலர்" : "Field Officer"}
@@ -590,7 +590,7 @@ function OfficerRoleLoginCard({ onBack }: { onBack: () => void }) {
 
         {/* Email / Mobile */}
         <div className="space-y-1.5">
-          <Label className="text-xs font-bold text-foreground flex items-center gap-1.5">
+          <Label className="text-xs font-bold text-slate-950 flex items-center gap-1.5">
             <User className="h-3.5 w-3.5 text-indigo-600" />
             {lang === "ta"
               ? "மின்னஞ்சல் / மொபைல் எண் *"
@@ -608,7 +608,7 @@ function OfficerRoleLoginCard({ onBack }: { onBack: () => void }) {
                 ? "9876543211 அல்லது பெயர்@example.com"
                 : "9876543211 or user@example.com"
             }
-            className="h-11 rounded-xl text-sm"
+            className="h-11 rounded-xl text-sm font-semibold text-slate-950 bg-white border-slate-300 placeholder:text-slate-400"
           />
         </div>
 
@@ -676,9 +676,9 @@ function LoginPage() {
             className="inline-block transition-transform hover:scale-105"
           >
             <img
-              src="/aram.png"
-              alt="ARAM"
-              className="h-14 w-auto mx-auto object-contain"
+              src="/logo.png"
+              alt="NAMMA KURAL"
+              className="h-16 w-16 mx-auto object-cover rounded-full border-2 border-amber-400/50 shadow-md"
               onError={(e) => {
                 const target = e.currentTarget;
                 target.style.display = "none";
@@ -686,7 +686,7 @@ function LoginPage() {
             />
           </Link>
           <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight font-display">
-            ARAM
+            {lang === "ta" ? "நம்ம குரல்" : "NAMMA KURAL"}
           </h1>
           <p className="text-xs sm:text-sm text-muted-foreground font-medium">
             {lang === "ta"
@@ -698,7 +698,7 @@ function LoginPage() {
             <span>
               {lang === "ta"
                 ? "பாதுகாப்பான அணுகல்"
-                : "Secure ARAM Access"}
+                : "Secure Access"}
             </span>
           </div>
         </div>
@@ -741,8 +741,8 @@ function LoginPage() {
 
         <p className="text-center text-[11px] text-muted-foreground leading-relaxed max-w-lg mx-auto">
           {lang === "ta"
-            ? "ARAM தளத்தை பயன்படுத்துவதன் மூலம், நீங்கள் சேவை விதிமுறைகள் மற்றும் தனியுரிமைக் கொள்கைக்கு உட்படுகிறீர்கள். உங்கள் தகவல் பாதுகாப்பாக மறைக்கப்பட்டு சேமிக்கப்படுகிறது."
-            : "By using ARAM, you agree to our Terms of Service and Privacy Policy. Your mobile is stored securely and never shared publicly."}
+            ? "நம்ம குரல் தளத்தை பயன்படுத்துவதன் மூலம், நீங்கள் சேவை விதிமுறைகள் மற்றும் தனியுரிமைக் கொள்கைக்கு உட்படுகிறீர்கள். உங்கள் தகவல் பாதுகாப்பாக மறைக்கப்பட்டு சேமிக்கப்படுகிறது."
+            : "By using NAMMA KURAL, you agree to our Terms of Service and Privacy Policy. Your mobile is stored securely and never shared publicly."}
         </p>
       </div>
     </div>

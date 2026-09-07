@@ -5,7 +5,7 @@ export const strings = {
   "brand.tagline": { en: "Citizen-first Digital Governance", ta: "குடிமகன் முதன்மை டிஜிட்டல் ஆளுகை" },
   "brand.meaning": { en: "Accessible • Responsive • Accountable • Modern", ta: "அணுகக்கூடிய • பதிலளிக்கும் • பொறுப்பான • நவீன" },
   "common.language": { en: "Language", ta: "மொழி" },
-  "common.loading": { en: "Loading ARAM…", ta: "ARAM ஏற்றப்படுகிறது…" },
+  "common.loading": { en: "Loading NAMMA KURAL…", ta: "நம்ம குரல் ஏற்றப்படுகிறது…" },
   "common.submit": { en: "Submit", ta: "சமர்ப்பிக்கவும்" },
   "common.next": { en: "Next", ta: "அடுத்து" },
   "common.back": { en: "Back", ta: "பின்செல்" },
@@ -48,7 +48,7 @@ export const strings = {
   "nav.emergency": { en: "Emergency Help", ta: "அவசர உதவி" },
 
   // Home
-  "home.hero.title": { en: "Your Voice. Your Area. Your ARAM.", ta: "உங்கள் குரல். உங்கள் பகுதி. உங்கள் ARAM." },
+  "home.hero.title": { en: "Your Voice. Your Area. NAMMA KURAL.", ta: "உங்கள் குரல். உங்கள் பகுதி. நம்ம குரல்." },
   "home.hero.sub": {
     en: "Report issues, access services, track progress and stay connected with your constituency.",
     ta: "பிரச்சினைகளை பதிவு செய்யுங்கள், சேவைகளை அணுகுங்கள், முன்னேற்றத்தை கண்காணியுங்கள், உங்கள் தொகுதியுடன் இணைந்திருங்கள்.",
@@ -61,7 +61,7 @@ export const strings = {
   "home.search.s5": { en: "Find an emergency service", ta: "அவசர சேவையை கண்டறிய" },
   "home.search.s6": { en: "View constituency projects", ta: "தொகுதி திட்டங்களை பார்க்க" },
   "home.services.title": { en: "Quick Citizen Services", ta: "விரைவு குடிமகன் சேவைகள்" },
-  "home.live.title": { en: "ARAM Live Status", ta: "ARAM நேரடி நிலை" },
+  "home.live.title": { en: "NAMMA KURAL Live Status", ta: "நம்ம குரல் நேரடி நிலை" },
   "home.live.resolved": { en: "Complaints Resolved", ta: "தீர்க்கப்பட்ட புகார்கள்" },
   "home.live.progress": { en: "Complaints In Progress", ta: "நடைபெறும் புகார்கள்" },
   "home.live.new": { en: "New Complaints", ta: "புதிய புகார்கள்" },
@@ -104,7 +104,7 @@ export const strings = {
 
   // Tracking
   "track.title": { en: "Track My Issue", ta: "எனது புகாரை கண்காணி" },
-  "track.placeholder": { en: "Enter ARAM Complaint ID, e.g. ARAM-2026-000245", ta: "ARAM புகார் எண்ணை உள்ளிடவும், எ.கா. ARAM-2026-000245" },
+  "track.placeholder": { en: "Enter Complaint ID, e.g. NK-2026-000245", ta: "புகார் எண்ணை உள்ளிடவும், எ.கா. NK-2026-000245" },
   "track.timeline": { en: "Progress Timeline", ta: "முன்னேற்ற காலவரிசை" },
   "track.beforeAfter": { en: "Before & After Proof", ta: "முன் & பின் ஆதாரம்" },
   "track.before": { en: "Before", ta: "முன்" },
@@ -181,13 +181,13 @@ export const strings = {
   "notif.empty": { en: "No notifications yet.", ta: "இதுவரை அறிவிப்புகள் இல்லை." },
 
   // Auth
-  "auth.title": { en: "Login to ARAM", ta: "ARAM இல் உள்நுழையவும்" },
+  "auth.title": { en: "Login to NAMMA KURAL", ta: "நம்ம குரல் தளத்தில் உள்நுழையவும்" },
   "auth.sub": { en: "One secure entry point for citizens and officials.", ta: "குடிமக்கள் மற்றும் அலுவலர்களுக்கான ஒரே பாதுகாப்பான நுழைவு." },
   "auth.mobile": { en: "Mobile number", ta: "கைபேசி எண்" },
   "auth.otp": { en: "One-time password", ta: "ஒரு முறை கடவுச்சொல்" },
   "auth.sendOtp": { en: "Send OTP", ta: "OTP அனுப்பு" },
   "auth.verify": { en: "Verify & Continue", ta: "சரிபார்த்து தொடரவும்" },
-  "auth.demoNote": { en: "Demo login — choose a role to preview its workspace. Any 6-digit code works.", ta: "மாதிரி உள்நுழைவு — பணியிடத்தை பார்க்க ஒரு பங்கை தேர்வு செய்யவும். எந்த 6 இலக்க குறியீடும் வேலை செய்யும்." },
+  "auth.demoNote": { en: "Secure portal login — select your role to proceed to your constituency workspace.", ta: "பாதுகாப்பான போர்ட்டல் உள்நுழைவு — உங்கள் தொகுதி பணியிடத்திற்கு செல்ல உங்கள் பங்கை தேர்ந்தெடுக்கவும்." },
   "auth.role": { en: "Continue as", ta: "இவ்வாறு தொடரவும்" },
   "auth.err.mobile": { en: "Enter a valid 10-digit mobile number.", ta: "சரியான 10 இலக்க கைபேசி எண்ணை உள்ளிடவும்." },
   "auth.err.otp": { en: "Enter the 6-digit code.", ta: "6 இலக்க குறியீட்டை உள்ளிடவும்." },
@@ -199,7 +199,7 @@ export const strings = {
   "dash.actionNeeded": { en: "Action needed from you", ta: "உங்களிடமிருந்து நடவடிக்கை தேவை" },
 
   // Console
-  "console.title": { en: "ARAM Console", ta: "ARAM கன்சோல்" },
+  "console.title": { en: "NAMMA KURAL Console", ta: "நம்ம குரல் கன்சோல்" },
   "console.super": { en: "Super Admin", ta: "முதன்மை நிர்வாகி" },
   "console.constituency": { en: "Constituency Admin", ta: "தொகுதி நிர்வாகி" },
   "console.department": { en: "Department Admin", ta: "துறை நிர்வாகி" },
@@ -212,14 +212,14 @@ export const strings = {
   "console.restricted": { en: "This workspace requires the matching role.", ta: "இந்த பணியிடத்திற்கு பொருந்தும் பங்கு தேவை." },
 
   // AI assistant
-  "ai.title": { en: "ARAM Assistant", ta: "ARAM உதவியாளர்" },
+  "ai.title": { en: "NAMMA KURAL Assistant", ta: "நம்ம குரல் உதவியாளர்" },
   "ai.sub": { en: "Ask about complaints, schemes, documents or appointments.", ta: "புகார்கள், திட்டங்கள், ஆவணங்கள் அல்லது சந்திப்புகள் குறித்து கேளுங்கள்." },
   "ai.placeholder": { en: "Type your question…", ta: "உங்கள் கேள்வியை தட்டச்சு செய்யுங்கள்…" },
   "ai.p1": { en: "How do I report a road problem?", ta: "சாலை பிரச்சினையை எப்படி பதிவு செய்வது?" },
   "ai.p2": { en: "Which documents are required for this scheme?", ta: "இந்த திட்டத்திற்கு என்ன ஆவணங்கள் தேவை?" },
   "ai.p3": { en: "Where is my complaint?", ta: "எனது புகார் எங்கே உள்ளது?" },
   "ai.p4": { en: "How do I meet the MLA?", ta: "எம்.எல்.ஏ.வை எப்படி சந்திப்பது?" },
-  "ai.demo": { en: "Demo assistant — responses are simulated.", ta: "மாதிரி உதவியாளர் — பதில்கள் உருவகப்படுத்தப்பட்டவை." },
+  "ai.demo": { en: "AI Citizen Assistant — ready to answer constituency queries.", ta: "AI குடிமக்கள் உதவியாளர் — தொகுதி கேள்விகளுக்கு பதிலளிக்க தயாராக உள்ளது." },
 
   // Accessibility
   "a11y.title": { en: "Accessibility", ta: "அணுகல்தன்மை" },

@@ -133,6 +133,8 @@ export function ConstituencyAdminDashboard() {
   // Field Officers
   const [officers, setOfficers] = useState<FieldOfficerItem[]>([]);
 
+  const [isSyncing, setIsSyncing] = useState(false);
+
   const loadAppts = async () => {
     setLoadingAppts(true);
     const data = await fetchAppointments();
@@ -145,10 +147,28 @@ export function ConstituencyAdminDashboard() {
     setOfficers(list);
   };
 
+  const handleSyncDb = async () => {
+    setIsSyncing(true);
+    try {
+      await fetch("/api/seed", { method: "POST" });
+      await refreshData();
+      await loadAppts();
+      await loadOfficers();
+      setToastMsg("Database synced with MongoDB successfully! All records loaded.");
+      setTimeout(() => setToastMsg(""), 4000);
+    } catch (err: any) {
+      setToastMsg("Sync error: " + (err?.message || "Failed to sync"));
+      setTimeout(() => setToastMsg(""), 4000);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   useEffect(() => {
     loadAppts();
     loadOfficers();
   }, []);
+
 
   // Stats calculation
   const totalComplaints = complaints.length;
@@ -162,6 +182,8 @@ export function ConstituencyAdminDashboard() {
   const totalAppts = appointments.length;
   const pendingAppts = appointments.filter((a) => a.status === "pending" || a.status === "under_review").length;
   const approvedAppts = appointments.filter((a) => a.status === "approved").length;
+
+  const [isAssigningDept, setIsAssigningDept] = useState(false);
 
   // Open complaint review and auto-suggest department based on category
   const handleOpenComplaintReview = (c: Complaint) => {
@@ -177,15 +199,26 @@ export function ConstituencyAdminDashboard() {
   };
 
   const handleAssignDepartment = async () => {
-    if (!selectedComplaint) return;
-    const res = await assignDepartmentToComplaint(selectedComplaint.id, assignDeptId, assignPriority, assignRemarks);
-    if (res.ok) {
-      setToastMsg(`Complaint #${selectedComplaint.id} allocated to department!`);
-      setTimeout(() => {
-        setSelectedComplaint(null);
-        setToastMsg("");
-        refreshData();
-      }, 1500);
+    if (!selectedComplaint || isAssigningDept) return;
+    setIsAssigningDept(true);
+    try {
+      const res = await assignDepartmentToComplaint(selectedComplaint.id, assignDeptId, assignPriority, assignRemarks);
+      if (res.ok) {
+        setToastMsg(`Complaint #${selectedComplaint.id} allocated to department!`);
+        setTimeout(() => {
+          setSelectedComplaint(null);
+          setToastMsg("");
+          refreshData();
+        }, 1200);
+      } else {
+        setToastMsg(`Error: ${res.message || "Failed to assign department"}`);
+        setTimeout(() => setToastMsg(""), 3500);
+      }
+    } catch (err: any) {
+      setToastMsg(`Error: ${err?.message || "Failed to assign department"}`);
+      setTimeout(() => setToastMsg(""), 3500);
+    } finally {
+      setIsAssigningDept(false);
     }
   };
 
@@ -317,106 +350,104 @@ export function ConstituencyAdminDashboard() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8 sm:py-10 space-y-8">
-      {/* ── Top Header Banner ── */}
-      <div className="rounded-3xl border border-border bg-white shadow-soft p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-        <div className="flex items-center gap-4">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-tr from-rose-600 to-amber-600 text-white text-2xl shrink-0 shadow-md">
+      {/* ── TVK Command Center Header Banner ── */}
+      <div className="rounded-3xl border border-red-900/20 bg-slate-900 text-white shadow-lift p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-red-600/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="flex items-center gap-4 relative z-10">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-400 text-slate-950 text-3xl font-black shrink-0 shadow-lg border border-amber-300">
             🏛️
           </div>
           <div>
-            <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="text-xl sm:text-2xl font-black text-foreground font-display">
-                ARAM Constituency Command Center
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <h1 className="text-xl sm:text-2xl font-black text-white font-display tracking-tight">
+                TVK Constituency Command Center
               </h1>
-              <Badge className="bg-rose-100 text-rose-800 border-0 text-xs font-bold">
-                Constituency Admin
+              <Badge className="bg-red-700 text-white border-0 text-xs font-bold px-2.5 py-0.5 shadow-sm">
+                MLA Presentation Mode
               </Badge>
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Logged in as: <strong className="text-foreground">{user?.name || "Constituency Administrator"}</strong> • Legislative Assembly Operations Desk
+            <p className="text-xs text-slate-300 mt-1">
+              Logged in: <strong className="text-amber-400">{user?.name || "Hon. MLA Office / Admin"}</strong> • Public Grievance Operations Desk
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3 relative z-10">
           <Button
             variant="outline"
             size="sm"
-            onClick={() => {
-              refreshData();
-              loadAppts();
-              loadOfficers();
-            }}
-            className="h-10 rounded-xl text-xs font-semibold gap-1.5"
+            disabled={isSyncing}
+            onClick={handleSyncDb}
+            className="h-10 rounded-xl text-xs font-bold gap-1.5 border-slate-700 bg-slate-800 text-slate-100 hover:bg-slate-700"
           >
-            <RefreshCw className="h-3.5 w-3.5" />
-            <span>Sync DB</span>
+            <RefreshCw className={`h-3.5 w-3.5 text-amber-400 ${isSyncing ? "animate-spin" : ""}`} />
+            <span>{isSyncing ? "Syncing..." : "Sync DB"}</span>
           </Button>
         </div>
       </div>
 
       {toastMsg && (
-        <div className="p-3.5 rounded-2xl bg-emerald-100 text-emerald-800 text-xs font-bold flex items-center gap-2 shadow-xs">
-          <CheckCircle2 className="h-4 w-4 shrink-0" />
+        <div className="p-3.5 rounded-2xl bg-emerald-900/90 text-emerald-100 text-xs font-bold flex items-center gap-2 shadow-sm border border-emerald-700">
+          <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400" />
           <span>{toastMsg}</span>
         </div>
       )}
 
       {/* ── Global Nav Tabs ── */}
       <Tabs value={activeMainTab} onValueChange={(v: any) => setActiveMainTab(v)} className="space-y-6">
-        <TabsList className="bg-muted/70 p-1.5 rounded-2xl h-auto flex flex-wrap gap-1">
-          <TabsTrigger value="overview" className="rounded-xl text-xs font-bold py-2.5 px-4 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+        <TabsList className="bg-slate-200/80 dark:bg-slate-800 p-1.5 rounded-2xl h-auto flex flex-wrap gap-1">
+          <TabsTrigger value="overview" className="rounded-xl text-xs font-bold py-2.5 px-4 data-[state=active]:bg-red-700 data-[state=active]:text-white data-[state=active]:shadow-md">
             <Layers className="h-3.5 w-3.5 mr-1.5" />
             Overview
           </TabsTrigger>
-          <TabsTrigger value="complaints" className="rounded-xl text-xs font-bold py-2.5 px-4 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+          <TabsTrigger value="complaints" className="rounded-xl text-xs font-bold py-2.5 px-4 data-[state=active]:bg-red-700 data-[state=active]:text-white data-[state=active]:shadow-md">
             <FileText className="h-3.5 w-3.5 mr-1.5" />
-            Complaints Pipeline ({totalComplaints})
+            Complaints ({totalComplaints})
           </TabsTrigger>
-          <TabsTrigger value="verification" className="rounded-xl text-xs font-bold py-2.5 px-4 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-            <CheckCircle2 className="h-3.5 w-3.5 mr-1.5 text-purple-600" />
-            Pending Verification ({pendingVerificationCount})
+          <TabsTrigger value="verification" className="rounded-xl text-xs font-bold py-2.5 px-4 data-[state=active]:bg-red-700 data-[state=active]:text-white data-[state=active]:shadow-md">
+            <CheckCircle2 className="h-3.5 w-3.5 mr-1.5 text-amber-400" />
+            Verification ({pendingVerificationCount})
           </TabsTrigger>
-          <TabsTrigger value="appointments" className="rounded-xl text-xs font-bold py-2.5 px-4 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-            <Calendar className="h-3.5 w-3.5 mr-1.5 text-rose-600" />
+          <TabsTrigger value="appointments" className="rounded-xl text-xs font-bold py-2.5 px-4 data-[state=active]:bg-red-700 data-[state=active]:text-white data-[state=active]:shadow-md">
+            <Calendar className="h-3.5 w-3.5 mr-1.5 text-amber-400" />
             MLA Appointments ({totalAppts})
           </TabsTrigger>
-          <TabsTrigger value="officers" className="rounded-xl text-xs font-bold py-2.5 px-4 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+          <TabsTrigger value="officers" className="rounded-xl text-xs font-bold py-2.5 px-4 data-[state=active]:bg-red-700 data-[state=active]:text-white data-[state=active]:shadow-md">
             <Users className="h-3.5 w-3.5 mr-1.5" />
             Field Officers ({officers.length})
           </TabsTrigger>
-          <TabsTrigger value="escalations" className="rounded-xl text-xs font-bold py-2.5 px-4 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-            <Flame className="h-3.5 w-3.5 mr-1.5 text-rose-600" />
-            Escalations & SLA ({overdueCount})
+          <TabsTrigger value="escalations" className="rounded-xl text-xs font-bold py-2.5 px-4 data-[state=active]:bg-red-700 data-[state=active]:text-white data-[state=active]:shadow-md">
+            <Flame className="h-3.5 w-3.5 mr-1.5 text-amber-400" />
+            SLA Escalations ({overdueCount})
           </TabsTrigger>
         </TabsList>
 
         {/* ── TAB 1: OVERVIEW ── */}
         <TabsContent value="overview" className="space-y-6">
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-            <div className="p-4 rounded-2xl bg-blue-50 border border-blue-200">
-              <span className="text-[11px] font-bold text-blue-800 uppercase">New Reports</span>
-              <p className="text-2xl sm:text-3xl font-black text-blue-950 mt-1 font-display">{newCount}</p>
+            <div className="p-4 rounded-2xl bg-white border border-red-200 shadow-soft">
+              <span className="text-[11px] font-bold text-red-700 uppercase tracking-wider">New Reports</span>
+              <p className="text-2xl sm:text-3xl font-black text-slate-900 mt-1 font-display">{newCount}</p>
             </div>
-            <div className="p-4 rounded-2xl bg-indigo-50 border border-indigo-200">
-              <span className="text-[11px] font-bold text-indigo-800 uppercase">Assigned</span>
-              <p className="text-2xl sm:text-3xl font-black text-indigo-950 mt-1 font-display">{assignedCount}</p>
+            <div className="p-4 rounded-2xl bg-white border border-indigo-200 shadow-soft">
+              <span className="text-[11px] font-bold text-indigo-700 uppercase tracking-wider">Assigned</span>
+              <p className="text-2xl sm:text-3xl font-black text-slate-900 mt-1 font-display">{assignedCount}</p>
             </div>
-            <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200">
-              <span className="text-[11px] font-bold text-amber-800 uppercase">In Progress</span>
-              <p className="text-2xl sm:text-3xl font-black text-amber-950 mt-1 font-display">{inProgressCount}</p>
+            <div className="p-4 rounded-2xl bg-white border border-amber-300 shadow-soft">
+              <span className="text-[11px] font-bold text-amber-800 uppercase tracking-wider">In Progress</span>
+              <p className="text-2xl sm:text-3xl font-black text-slate-900 mt-1 font-display">{inProgressCount}</p>
             </div>
-            <div className="p-4 rounded-2xl bg-purple-50 border border-purple-200">
-              <span className="text-[11px] font-bold text-purple-800 uppercase">To Verify</span>
-              <p className="text-2xl sm:text-3xl font-black text-purple-950 mt-1 font-display">{pendingVerificationCount}</p>
+            <div className="p-4 rounded-2xl bg-white border border-purple-200 shadow-soft">
+              <span className="text-[11px] font-bold text-purple-700 uppercase tracking-wider">To Verify</span>
+              <p className="text-2xl sm:text-3xl font-black text-slate-900 mt-1 font-display">{pendingVerificationCount}</p>
             </div>
-            <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200">
-              <span className="text-[11px] font-bold text-emerald-800 uppercase">Resolved</span>
-              <p className="text-2xl sm:text-3xl font-black text-emerald-950 mt-1 font-display">{resolvedCount}</p>
+            <div className="p-4 rounded-2xl bg-white border border-emerald-300 shadow-soft">
+              <span className="text-[11px] font-bold text-emerald-700 uppercase tracking-wider">Resolved</span>
+              <p className="text-2xl sm:text-3xl font-black text-slate-900 mt-1 font-display">{resolvedCount}</p>
             </div>
-            <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200">
-              <span className="text-[11px] font-bold text-rose-800 uppercase flex items-center gap-1">
-                <Flame className="h-3 w-3 text-rose-600" /> Overdue
+            <div className="p-4 rounded-2xl bg-white border border-red-400 shadow-soft">
+              <span className="text-[11px] font-bold text-red-800 uppercase flex items-center gap-1 tracking-wider">
+                <Flame className="h-3 w-3 text-red-600" /> Overdue
               </span>
               <p className="text-2xl sm:text-3xl font-black text-rose-950 mt-1 font-display">{overdueCount}</p>
             </div>
@@ -916,10 +947,11 @@ export function ConstituencyAdminDashboard() {
 
                 <Button
                   onClick={handleAssignDepartment}
+                  disabled={isAssigningDept}
                   className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold h-11 rounded-xl shadow-md gap-2 text-xs"
                 >
-                  <Send className="h-4 w-4" />
-                  <span>Assign Department & Dispatch Task</span>
+                  <Send className={`h-4 w-4 ${isAssigningDept ? "animate-spin" : ""}`} />
+                  <span>{isAssigningDept ? "Dispatching Task..." : "Assign Department & Dispatch Task"}</span>
                 </Button>
               </div>
 

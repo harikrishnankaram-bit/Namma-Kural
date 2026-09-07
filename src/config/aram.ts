@@ -12,18 +12,18 @@ export interface Bilingual {
 }
 
 export const CONSTITUENCY = {
-  id: "tn-thousand-lights",
-  name: { en: "ARAM Constituency", ta: "ARAM Constituency" } as Bilingual,
-  district: { en: "Chennai", ta: "சென்னை" } as Bilingual,
+  id: "tn-tiruchengode",
+  name: { en: "Tiruchengode Constituency", ta: "திருச்செங்கோடு தொகுதி" } as Bilingual,
+  district: { en: "Namakkal", ta: "நாமக்கல்" } as Bilingual,
   state: { en: "Tamil Nadu", ta: "தமிழ்நாடு" } as Bilingual,
-  center: { lat: 13.0604, lng: 80.2496 },
+  center: { lat: 11.3787, lng: 77.8953 },
   defaultZoom: 14,
   helpline: "1800-000-2026",
-  officeEmail: "office@aram.gov.example",
+  officeEmail: "office@tiruchengode.gov.example",
 };
 
 export const MLA = {
-  name: { en: "Hon. Constituency Representative", ta: "மாண்புமிகு தொகுதி பிரதிநிதி" } as Bilingual,
+  name: { en: "Hon. MLA Representative", ta: "மாண்புமிகு தொகுதி சட்டமன்ற உறுப்பினர்" } as Bilingual,
   role: { en: "Member of Legislative Assembly", ta: "சட்டமன்ற உறுப்பினர்" } as Bilingual,
   officeHours: { en: "Mon–Sat, 10:00 AM – 1:00 PM", ta: "திங்கள்–சனி, காலை 10:00 – பிற்பகல் 1:00" } as Bilingual,
 };
@@ -37,12 +37,12 @@ export interface Ward {
 }
 
 export const WARDS: Ward[] = [
-  { id: "w-108", number: 108, name: { en: "Egmore", ta: "எழும்பூர்" }, center: { lat: 13.0732, lng: 80.2609 }, population: 42150 },
-  { id: "w-109", number: 109, name: { en: "Chintadripet", ta: "சிந்தாதிரிப்பேட்டை" }, center: { lat: 13.0704, lng: 80.2724 }, population: 38400 },
-  { id: "w-110", number: 110, name: { en: "Thousand Lights", ta: "ஆயிரம் விளக்கு" }, center: { lat: 13.0604, lng: 80.2496 }, population: 46980 },
-  { id: "w-111", number: 111, name: { en: "Royapettah", ta: "இராயப்பேட்டை" }, center: { lat: 13.0533, lng: 80.2645 }, population: 51220 },
-  { id: "w-112", number: 112, name: { en: "Nungambakkam", ta: "நுங்கம்பாக்கம்" }, center: { lat: 13.0569, lng: 80.2425 }, population: 44310 },
-  { id: "w-113", number: 113, name: { en: "Teynampet", ta: "தேனாம்பேட்டை" }, center: { lat: 13.0416, lng: 80.2497 }, population: 39875 },
+  { id: "w-01", number: 1, name: { en: "Tiruchengode Main Road", ta: "திருச்செங்கோடு பிரதான சாலை" }, center: { lat: 11.3787, lng: 77.8953 }, population: 42150 },
+  { id: "w-02", number: 2, name: { en: "Sankari Road Sector", ta: "சங்ககிரி சாலை பகுதி" }, center: { lat: 11.3850, lng: 77.8900 }, population: 38400 },
+  { id: "w-03", number: 3, name: { en: "Taluk Office Zone", ta: "தாலுகா அலுவலக பகுதி" }, center: { lat: 11.3720, lng: 77.9010 }, population: 46980 },
+  { id: "w-04", number: 4, name: { en: "Government Hospital Sector", ta: "அரசு மருத்துவமனை பகுதி" }, center: { lat: 11.3810, lng: 77.9050 }, population: 51220 },
+  { id: "w-05", number: 5, name: { en: "Velur Road West", ta: "வேலூர் சாலை மேற்கு" }, center: { lat: 11.3690, lng: 77.8880 }, population: 44310 },
+  { id: "w-06", number: 6, name: { en: "Namakkal Road East", ta: "நாமக்கல் சாலை கிழக்கு" }, center: { lat: 11.3750, lng: 77.9120 }, population: 39875 },
 ];
 
 export interface Department {
@@ -82,26 +82,58 @@ export const CATEGORIES: Category[] = [
 
 export type ComplaintStatus =
   | "new"
+  | "NEW"
+  | "under_review"
+  | "UNDER_REVIEW"
+  | "pending_verification"
   | "verified"
   | "assigned"
+  | "ASSIGNED"
+  | "accepted"
+  | "ACCEPTED"
   | "in_progress"
+  | "IN_PROGRESS"
   | "completed"
+  | "COMPLETED"
+  | "verification_pending"
+  | "VERIFICATION_PENDING"
   | "citizen_verification"
+  | "resolved"
+  | "RESOLVED"
   | "closed"
-  | "pending_verification";
+  | "rejected"
+  | "REJECTED"
+  | "reopened"
+  | "REOPENED";
 
 export const STATUS_META: Record<
-  ComplaintStatus,
-  { label: Bilingual; tone: "new" | "assigned" | "progress" | "resolved" | "pending" }
+  string,
+  { label: Bilingual; tone: "new" | "assigned" | "progress" | "resolved" | "pending" | "rejected" }
 > = {
   new: { label: { en: "Newly Registered", ta: "புதிதாக பதிவு" }, tone: "new" },
+  NEW: { label: { en: "Newly Registered", ta: "புதிதாக பதிவு" }, tone: "new" },
+  under_review: { label: { en: "Under Review", ta: "ஆய்வில் உள்ளது" }, tone: "pending" },
+  UNDER_REVIEW: { label: { en: "Under Review", ta: "ஆய்வில் உள்ளது" }, tone: "pending" },
   pending_verification: { label: { en: "Pending Verification", ta: "சரிபார்ப்பு நிலுவையில்" }, tone: "pending" },
   verified: { label: { en: "Verified", ta: "சரிபார்க்கப்பட்டது" }, tone: "assigned" },
-  assigned: { label: { en: "Assigned", ta: "ஒதுக்கப்பட்டது" }, tone: "assigned" },
+  assigned: { label: { en: "Assigned to Dept", ta: "துறைக்கு ஒதுக்கப்பட்டது" }, tone: "assigned" },
+  ASSIGNED: { label: { en: "Assigned to Dept", ta: "துறைக்கு ஒதுக்கப்பட்டது" }, tone: "assigned" },
+  accepted: { label: { en: "Officer Accepted", ta: "அலுவலர் ஏற்றுக்கொண்டார்" }, tone: "progress" },
+  ACCEPTED: { label: { en: "Officer Accepted", ta: "அலுவலர் ஏற்றுக்கொண்டார்" }, tone: "progress" },
   in_progress: { label: { en: "In Progress", ta: "பணி நடைபெறுகிறது" }, tone: "progress" },
+  IN_PROGRESS: { label: { en: "In Progress", ta: "பணி நடைபெறுகிறது" }, tone: "progress" },
   completed: { label: { en: "Work Completed", ta: "பணி முடிந்தது" }, tone: "progress" },
+  COMPLETED: { label: { en: "Work Completed", ta: "பணி முடிந்தது" }, tone: "progress" },
+  verification_pending: { label: { en: "Verification Pending", ta: "சரிபார்ப்பு நிலுவையில்" }, tone: "pending" },
+  VERIFICATION_PENDING: { label: { en: "Verification Pending", ta: "சரிபார்ப்பு நிலுவையில்" }, tone: "pending" },
   citizen_verification: { label: { en: "Citizen Verification", ta: "குடிமகன் உறுதிப்படுத்தல்" }, tone: "progress" },
+  resolved: { label: { en: "Resolved", ta: "தீர்க்கப்பட்டது" }, tone: "resolved" },
+  RESOLVED: { label: { en: "Resolved", ta: "தீர்க்கப்பட்டது" }, tone: "resolved" },
   closed: { label: { en: "Resolved & Closed", ta: "தீர்க்கப்பட்டு மூடப்பட்டது" }, tone: "resolved" },
+  rejected: { label: { en: "Rejected", ta: "நிராகரிக்கப்பட்டது" }, tone: "rejected" },
+  REJECTED: { label: { en: "Rejected", ta: "நிராகரிக்கப்பட்டது" }, tone: "rejected" },
+  reopened: { label: { en: "Reopened", ta: "மீண்டும் திறக்கப்பட்டது" }, tone: "new" },
+  REOPENED: { label: { en: "Reopened", ta: "மீண்டும் திறக்கப்பட்டது" }, tone: "new" },
 };
 
 export const STATUS_TONE_COLOR: Record<string, string> = {
@@ -110,6 +142,7 @@ export const STATUS_TONE_COLOR: Record<string, string> = {
   progress: "var(--status-progress)",
   resolved: "var(--status-resolved)",
   pending: "var(--status-pending)",
+  rejected: "#ef4444",
 };
 
 export type Role =

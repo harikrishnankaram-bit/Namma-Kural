@@ -45,6 +45,7 @@ export function FieldOfficerDashboard() {
   const { user } = useAuth();
   const {
     complaints,
+    acceptAssignmentOnComplaint,
     startWorkOnComplaint,
     updateProgressOnComplaint,
     submitCompletionOnComplaint,
@@ -54,6 +55,7 @@ export function FieldOfficerDashboard() {
   const [selectedTask, setSelectedTask] = useState<Complaint | null>(null);
   const [activeModalAction, setActiveModalAction] = useState<"progress" | "complete" | "view">("view");
   const [progressRemarks, setProgressRemarks] = useState("");
+  const [progressPhoto, setProgressPhoto] = useState("");
   const [completionRemarks, setCompletionRemarks] = useState("Resolution completed. Site inspected, repaired, and cleaned.");
   const [completionDate, setCompletionDate] = useState(new Date().toISOString().split("T")[0]!);
   const [afterPhotoUrl, setAfterPhotoUrl] = useState(
@@ -61,46 +63,90 @@ export function FieldOfficerDashboard() {
   );
   const [toastMsg, setToastMsg] = useState("");
   const [loadingAction, setLoadingAction] = useState(false);
+  const [activeFilterTab, setActiveFilterTab] = useState<"all" | "active" | "in_progress" | "completed">("all");
 
   // Field officer tasks:
-  // Match complaints where assigned officer is this user or officer is assigned
+  // 1. Direct matches by officer name
+  // 2. Department or Ward tasks
+  // 3. All actionable grievances ready for field execution
   const officerTasks = complaints.filter((c) => {
+    // If specific officer name is assigned
     if (user?.name && c.officer && c.officer.toLowerCase().includes(user.name.toLowerCase())) {
       return true;
     }
-    // Fallback: show assigned/in_progress tasks for the officer's department
+    // If user belongs to a specific department
     if (user?.departmentId && c.departmentId === user.departmentId) {
-      return ["assigned", "in_progress", "completed"].includes(c.status);
+      return true;
     }
-    return ["assigned", "in_progress", "completed"].includes(c.status);
+    // Actionable field tasks
+    return ["verified", "assigned", "ASSIGNED", "accepted", "ACCEPTED", "in_progress", "IN_PROGRESS", "completed", "COMPLETED", "citizen_verification", "closed"].includes(c.status);
   });
 
-  const activeTasks = officerTasks.filter((c) => ["assigned", "in_progress"].includes(c.status));
-  const completedTasks = officerTasks.filter((c) => ["completed", "closed", "citizen_verification"].includes(c.status));
+  const activeTasks = officerTasks.filter((c) => ["assigned", "ASSIGNED", "accepted", "ACCEPTED", "in_progress", "IN_PROGRESS", "verified"].includes(c.status));
+  const inProgressTasks = officerTasks.filter((c) => ["in_progress", "IN_PROGRESS"].includes(c.status));
+  const completedTasks = officerTasks.filter((c) => ["completed", "COMPLETED", "closed", "resolved", "RESOLVED", "citizen_verification"].includes(c.status));
+
+  const displayedTasks = officerTasks.filter((c) => {
+    if (activeFilterTab === "active") return ["assigned", "ASSIGNED", "accepted", "ACCEPTED", "verified"].includes(c.status);
+    if (activeFilterTab === "in_progress") return ["in_progress", "IN_PROGRESS"].includes(c.status);
+    if (activeFilterTab === "completed") return ["completed", "COMPLETED", "closed", "resolved", "RESOLVED", "citizen_verification"].includes(c.status);
+    return true;
+  });
+
+  const handleAcceptTask = async (id: string) => {
+    setLoadingAction(true);
+    try {
+      const res = await acceptAssignmentOnComplaint(id, "Field officer accepted assignment and scheduled inspection.");
+      if (res.ok) {
+        setToastMsg(lang === "ta" ? "பணி ஏற்றுக்கொள்ளப்பட்டது!" : "Complaint Accepted! Status updated to Accepted.");
+        setTimeout(() => {
+          setToastMsg("");
+          refreshData();
+        }, 1200);
+      } else {
+        setToastMsg(`Error: ${res.message || "Failed to accept task"}`);
+        setTimeout(() => setToastMsg(""), 3500);
+      }
+    } catch (err: any) {
+      setToastMsg(`Error: ${err?.message || "Failed to accept task"}`);
+      setTimeout(() => setToastMsg(""), 3500);
+    } finally {
+      setLoadingAction(false);
+    }
+  };
 
   const handleStartWork = async (id: string) => {
     setLoadingAction(true);
-    const res = await startWorkOnComplaint(id, "Field officer arrived at site and commenced resolution.");
-    setLoadingAction(false);
-    if (res.ok) {
-      setToastMsg(lang === "ta" ? "பணி தொடங்கியது! நிலை மாற்றப்பட்டது." : "Work Started! Status updated to In Progress.");
-      setTimeout(() => {
-        setSelectedTask((prev) => (prev ? { ...prev, status: "in_progress" } : null));
-        setToastMsg("");
-        refreshData();
-      }, 1200);
+    try {
+      const res = await startWorkOnComplaint(id, "Field officer arrived at site and commenced resolution.");
+      if (res.ok) {
+        setToastMsg(lang === "ta" ? "பணி தொடங்கியது! நிலை மாற்றப்பட்டது." : "Work Started! Status updated to In Progress.");
+        setTimeout(() => {
+          setToastMsg("");
+          refreshData();
+        }, 1200);
+      } else {
+        setToastMsg(`Error: ${res.message || "Failed to start work"}`);
+        setTimeout(() => setToastMsg(""), 3500);
+      }
+    } catch (err: any) {
+      setToastMsg(`Error: ${err?.message || "Failed to start work"}`);
+      setTimeout(() => setToastMsg(""), 3500);
+    } finally {
+      setLoadingAction(false);
     }
   };
 
   const handleUpdateProgress = async (id: string) => {
     if (!progressRemarks.trim()) return;
     setLoadingAction(true);
-    const res = await updateProgressOnComplaint(id, progressRemarks);
+    const res = await updateProgressOnComplaint(id, progressRemarks, progressPhoto ? [progressPhoto] : []);
     setLoadingAction(false);
     if (res.ok) {
       setToastMsg(lang === "ta" ? "முன்னேற்றக் குறிப்பு பதிவு செய்யப்பட்டது!" : "Progress update recorded successfully!");
       setTimeout(() => {
         setProgressRemarks("");
+        setProgressPhoto("");
         setActiveModalAction("view");
         setToastMsg("");
         refreshData();
@@ -129,6 +175,13 @@ export function FieldOfficerDashboard() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-6 sm:py-10 space-y-6">
+      {toastMsg && (
+        <div className="p-3.5 rounded-2xl bg-indigo-600 text-white text-xs font-bold flex items-center gap-2 shadow-md">
+          <CheckCircle2 className="h-4.5 w-4.5 shrink-0" />
+          <span>{toastMsg}</span>
+        </div>
+      )}
+
       {/* ── Officer Mobile Terminal Banner ── */}
       <div className="rounded-3xl border border-border bg-white shadow-soft p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3.5">
@@ -162,36 +215,73 @@ export function FieldOfficerDashboard() {
 
       {/* ── Task List ── */}
       <div className="space-y-4">
-        <div className="flex items-center justify-between px-1">
-          <h2 className="text-base font-bold text-foreground flex items-center gap-2">
-            <span>{lang === "ta" ? "எனக்கு ஒதுக்கப்பட்ட பணிகள்" : "My Assigned Work"}</span>
-            <Badge variant="secondary" className="text-xs">{activeTasks.length}</Badge>
-          </h2>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => refreshData()}
-            className="text-xs font-semibold text-muted-foreground"
-          >
-            <RefreshCw className="h-3 w-3 mr-1" />
-            <span>Refresh</span>
-          </Button>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-1">
+          <div className="flex items-center gap-2">
+            <h2 className="text-base font-bold text-foreground">
+              {lang === "ta" ? "களப் பணிகள்" : "Field Tasks & Work Orders"}
+            </h2>
+            <Badge variant="secondary" className="text-xs font-bold">{displayedTasks.length}</Badge>
+          </div>
+
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <Button
+              size="sm"
+              variant={activeFilterTab === "all" ? "default" : "outline"}
+              onClick={() => setActiveFilterTab("all")}
+              className="text-xs h-8 rounded-lg font-bold"
+            >
+              All ({officerTasks.length})
+            </Button>
+            <Button
+              size="sm"
+              variant={activeFilterTab === "active" ? "default" : "outline"}
+              onClick={() => setActiveFilterTab("active")}
+              className="text-xs h-8 rounded-lg font-bold"
+            >
+              Ready / Assigned ({activeTasks.length})
+            </Button>
+            <Button
+              size="sm"
+              variant={activeFilterTab === "in_progress" ? "default" : "outline"}
+              onClick={() => setActiveFilterTab("in_progress")}
+              className="text-xs h-8 rounded-lg font-bold"
+            >
+              In Progress ({inProgressTasks.length})
+            </Button>
+            <Button
+              size="sm"
+              variant={activeFilterTab === "completed" ? "default" : "outline"}
+              onClick={() => setActiveFilterTab("completed")}
+              className="text-xs h-8 rounded-lg font-bold"
+            >
+              Completed ({completedTasks.length})
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => refreshData()}
+              className="text-xs font-semibold text-muted-foreground h-8 px-2"
+            >
+              <RefreshCw className="h-3 w-3 mr-1" />
+              <span>Refresh</span>
+            </Button>
+          </div>
         </div>
 
-        {officerTasks.length === 0 ? (
+        {displayedTasks.length === 0 ? (
           <Card className="rounded-3xl border border-dashed border-border p-12 text-center bg-muted/20">
             <Clock className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
             <h3 className="text-base font-bold text-foreground">
-              {lang === "ta" ? "செயலில் உள்ள கள பணிகள் எதுவும் ஒதுக்கப்படவில்லை" : "No active field tasks assigned"}
+              {lang === "ta" ? "செயலில் உள்ள கள பணிகள் எதுவும் இல்லை" : "No tasks found in this view"}
             </h3>
             <p className="text-xs text-muted-foreground mt-1 max-w-sm mx-auto">
               {lang === "ta"
                 ? "துறை நிர்வாகியால் புதிய பணிகள் ஒதுக்கப்பட்டவுடன் இங்கு காட்டப்படும்."
-                : "New tasks will appear here once assigned by the department administrator."}
+                : "Switch to 'All' or assign tasks from the Department Admin console."}
             </p>
           </Card>
         ) : (
-          officerTasks.map((c) => {
+          displayedTasks.map((c) => {
             const cat = CATEGORIES.find((x) => x.id === c.categoryId);
             const ward = WARDS.find((w) => w.id === c.wardId);
             const isAssigned = c.status === "assigned" || c.status === "verified";
@@ -280,13 +370,26 @@ export function FieldOfficerDashboard() {
                       <span>GPS Directions</span>
                     </a>
 
-                    {/* Stage 1: Assigned -> Start Work */}
-                    {isAssigned && (
+                    {/* Stage 1: Assigned -> Accept Task */}
+                    {["assigned", "ASSIGNED"].includes(c.status) && (
+                      <Button
+                        size="sm"
+                        disabled={loadingAction}
+                        onClick={() => handleAcceptTask(c.id)}
+                        className="bg-primary hover:bg-primary/90 text-white font-bold text-xs h-9 rounded-xl gap-1.5 shadow-md"
+                      >
+                        <Check className="h-3.5 w-3.5" />
+                        <span>Accept Task →</span>
+                      </Button>
+                    )}
+
+                    {/* Stage 1b: Accepted -> Start Work */}
+                    {["accepted", "ACCEPTED", "verified"].includes(c.status) && (
                       <Button
                         size="sm"
                         disabled={loadingAction}
                         onClick={() => handleStartWork(c.id)}
-                        className="bg-primary hover:bg-primary/90 text-white font-bold text-xs h-9 rounded-xl gap-1.5 shadow-md"
+                        className="bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs h-9 rounded-xl gap-1.5 shadow-md"
                       >
                         <Play className="h-3.5 w-3.5" />
                         <span>Start Work →</span>
@@ -294,7 +397,7 @@ export function FieldOfficerDashboard() {
                     )}
 
                     {/* Stage 2: In Progress -> Update Progress & Submit Completion */}
-                    {isInProgress && (
+                    {["in_progress", "IN_PROGRESS"].includes(c.status) && (
                       <>
                         <Button
                           size="sm"

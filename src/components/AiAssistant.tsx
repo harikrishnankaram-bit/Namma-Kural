@@ -21,8 +21,8 @@ function getMockResponse(question: string, lang: "en" | "ta"): string {
   }
   if (q.includes("track") || q.includes("complaint") || q.includes("புகார்") || q.includes("கண்காணி")) {
     return lang === "ta"
-      ? "உங்கள் ARAM புகார் எண்ணை 'எனது புகாரை கண்காணி' பக்கத்தில் உள்ளிடுங்கள். உதாரணம்: ARAM-2026-000245"
-      : "Go to 'Track My Issue' and enter your ARAM complaint ID (e.g. ARAM-2026-000245) to see live status and timeline.";
+      ? "உங்கள் புகார் எண்ணை 'எனது புகாரை கண்காணி' பக்கத்தில் உள்ளிடுங்கள். உதாரணம்: NK-2026-000245"
+      : "Go to 'Track My Issue' and enter your complaint ID (e.g. NK-2026-000245) to see live status and timeline.";
   }
   if (q.includes("scheme") || q.includes("திட்ட") || q.includes("document") || q.includes("ஆவண")) {
     return lang === "ta"
@@ -82,11 +82,11 @@ export function AiAssistant() {
         id="ai-assistant-toggle"
         onClick={() => setOpen((o) => !o)}
         className="fixed bottom-6 right-6 z-50 flex items-center gap-2 h-12 px-4 rounded-full bg-primary text-primary-foreground shadow-lift hover:scale-105 active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-        aria-label="Ask ARAM AI Assistant"
+        aria-label="Ask NAMMA KURAL AI Assistant"
       >
         <MessageCircle className="h-5 w-5 shrink-0" />
         <span className="text-xs font-bold tracking-wide hidden sm:inline">
-          {lang === "ta" ? "ARAM-யிடம் கேளுங்கள்" : "Ask ARAM"}
+          {lang === "ta" ? "நம்ம குரல்-யிடம் கேளுங்கள்" : "Ask NAMMA KURAL"}
         </span>
         {open && <ChevronDown className="h-4 w-4 shrink-0" />}
       </button>
@@ -98,11 +98,11 @@ export function AiAssistant() {
           <div className="flex items-center justify-between bg-primary px-4 py-3.5">
             <div className="flex items-center gap-2">
               <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/20 text-white text-xs font-bold">
-                AR
+                NK
               </div>
               <div>
                 <p className="text-sm font-bold text-primary-foreground">
-                  {lang === "ta" ? "ARAM AI உதவியாளர்" : "Ask ARAM Assistant"}
+                  {lang === "ta" ? "நம்ம குரல் AI உதவியாளர்" : "Ask NAMMA KURAL Assistant"}
                 </p>
                 <p className="text-[10px] text-primary-foreground/80">
                   {lang === "ta" ? "24/7 தொகுதி வழிகாட்டி" : "24/7 Constituency Civic Guide"}

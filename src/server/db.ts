@@ -13,12 +13,9 @@ if (fs.existsSync(envPath)) {
 }
 
 // Debug: confirm env loaded
-console.log("[DEBUG] Loaded MONGODB_URI:", process.env.MONGODB_URI);
+console.log("[DEBUG] Loaded MONGODB_URI:", process.env["MONGODB_URI"] ? "Set" : "Not Set");
 
 import type { Role, Bilingual, ComplaintStatus } from "@/config/aram";
-
-// Debug: ensure env var loaded
-console.log("[DEBUG] MONGODB_URI:", process.env.MONGODB_URI);
 
 export interface CitizenDoc {
   _id?: ObjectId | undefined;
@@ -119,18 +116,24 @@ export interface AppointmentDoc {
   appointmentId: string;
   citizenId: string;
   citizenName: string;
-  mobileNumber: string;
+  fullName?: string | undefined;
+  mobile: string;
+  mobileNumber?: string | undefined;
   email?: string | undefined;
   wardId: string;
   wardName?: string | undefined;
-  preferredDate: string;
-  preferredTime: string;
+  appointmentDate: string;
+  preferredDate?: string | undefined;
+  appointmentTime: string;
+  preferredTime?: string | undefined;
   purpose: string;
   description?: string | undefined;
   relatedComplaintId?: string | undefined;
-  status: "pending" | "under_review" | "approved" | "rescheduled" | "upcoming" | "completed" | "rejected" | "cancelled";
+  status: "Pending Review" | "Approved" | "Rejected" | "Completed" | "Pending" | "PENDING" | "under_review" | "rescheduled" | "upcoming" | "cancelled" | string;
   confirmedDate?: string | undefined;
   confirmedTime?: string | undefined;
+  venue?: string | undefined;
+  location?: string | undefined;
   meetingLocation?: string | undefined;
   mlaRepresentative?: string | undefined;
   adminRemarks?: string | undefined;
@@ -150,6 +153,25 @@ export interface OtpDoc {
   createdAt: number;
 }
 
+export interface ComplaintUpdateDoc {
+  _id?: ObjectId | undefined;
+  updateId?: string | undefined;
+  complaintId: string;
+  previousStatus?: string | undefined;
+  newStatus?: string | undefined;
+  status?: string | undefined;
+  message?: string | undefined;
+  changedBy?: string | undefined;
+  changedByRole?: string | undefined;
+  updatedBy?: string | undefined;
+  updatedByRole?: string | undefined;
+  timestamp?: string | undefined;
+  createdAt?: string | undefined;
+  remarks?: string | undefined;
+  photos?: string[] | undefined;
+  afterImage?: string | undefined;
+}
+
 export interface AuditLogDoc {
   _id?: ObjectId | undefined;
   logId: string;
@@ -158,9 +180,13 @@ export interface AuditLogDoc {
   role: string;
   action: string;
   entityId: string;
-  entityType: "complaint" | "appointment" | "user" | "system";
+  entityType: "complaint" | "appointment" | "user" | "announcement" | "development_work" | "system";
   prevStatus?: string | undefined;
   newStatus?: string | undefined;
+  previousValue?: string | undefined;
+  newValue?: string | undefined;
+  performedBy?: string | undefined;
+  performedByRole?: string | undefined;
   remarks?: string | undefined;
   timestamp: string;
 }
@@ -171,12 +197,16 @@ export interface AnnouncementDoc {
   title: Bilingual;
   description: Bilingual;
   date: string;
+  publishedDate?: string | undefined;
+  expiryDate?: string | undefined;
   time?: string | undefined;
   location?: string | undefined;
   category: string;
+  image?: string | undefined;
   imageUrl?: string | undefined;
   registrationInfo?: string | undefined;
   published: boolean;
+  status?: "draft" | "published" | "scheduled" | "archived" | undefined;
   createdBy: string;
   createdAt: string;
   updatedAt: string;
@@ -203,15 +233,22 @@ export interface SchemeDoc {
 export interface DevelopmentWorkDoc {
   _id?: ObjectId | undefined;
   workId: string;
+  title?: Bilingual | undefined;
   name: Bilingual;
   location: string;
   department: string;
+  assignedOfficer?: string | undefined;
   description: Bilingual;
   startDate: string;
   expectedCompletion: string;
-  status: "planned" | "in_progress" | "completed" | "on_hold";
+  expectedCompletionDate?: string | undefined;
+  status: "planned" | "approved" | "in_progress" | "completed" | "on_hold" | "cancelled" | "PLANNED" | "APPROVED" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED";
+  budget?: number | string | undefined;
   progressPercent: number;
+  progressPercentage?: number | undefined;
+  photos?: string[] | undefined;
   images?: string[] | undefined;
+  remarks?: string | undefined;
   published: boolean;
   createdBy: string;
   createdAt: string;
@@ -316,15 +353,22 @@ class MemoryDatabase {
   public developmentWorks = new MemoryCollection<DevelopmentWorkDoc>();
 }
 
-const memoryDbSingleton = new MemoryDatabase();
+const globalForDb = globalThis as unknown as {
+  memoryDbSingleton?: MemoryDatabase;
+  clientPromise?: Promise<MongoClient> | null;
+};
+
+const memoryDbSingleton = globalForDb.memoryDbSingleton ?? new MemoryDatabase();
+globalForDb.memoryDbSingleton = memoryDbSingleton;
 
 let client: MongoClient | null = null;
-let clientPromise: Promise<MongoClient> | null = null;
+let clientPromise: Promise<MongoClient> | null = globalForDb.clientPromise ?? null;
 let useMemoryFallback = false;
 
 const MONGODB_URI = process.env["MONGODB_URI"];
 if (!MONGODB_URI) {
-  throw new Error("MONGODB_URI environment variable is not set");
+  useMemoryFallback = true;
+  console.log("[Database] MONGODB_URI not provided. Operating in local memory database mode.");
 }
 
 export async function getDb(): Promise<{
@@ -362,9 +406,9 @@ export async function getDb(): Promise<{
 
   try {
     if (!clientPromise) {
-      client = new MongoClient(MONGODB_URI, {
-        serverSelectionTimeoutMS: 5000,
-        connectTimeoutMS: 5000,
+      client = new MongoClient(MONGODB_URI as string, {
+        serverSelectionTimeoutMS: 2000,
+        connectTimeoutMS: 2000,
       });
       clientPromise = client.connect();
     }
@@ -386,6 +430,10 @@ export async function getDb(): Promise<{
       await db.collection("otps").createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 });
       await db.collection("auditLogs").createIndex({ timestamp: -1 });
       await db.collection("auditLogs").createIndex({ entityId: 1 });
+      await db.collection("appointments").createIndex({ appointmentId: 1 }, { unique: true });
+      await db.collection("appointments").createIndex({ mobile: 1 });
+      await db.collection("appointments").createIndex({ status: 1 });
+      await db.collection("notifications").createIndex({ notificationId: 1 }, { unique: true });
     } catch {
       // index creation or permission warning
     }
@@ -405,10 +453,25 @@ export async function getDb(): Promise<{
       schemes: db.collection<SchemeDoc>("schemes"),
       developmentWorks: db.collection<DevelopmentWorkDoc>("developmentWorks"),
     };
-  } catch (err) {
-    // No fallback to in-memory; propagate error
-    console.error("MongoDB connection error:", err);
-    throw err;
-
+  } catch (_err) {
+    clientPromise = null;
+    client = null;
+    useMemoryFallback = true;
+    console.log("[Database] Remote MongoDB cluster unreachable. Switched seamlessly to local memory database mode.");
+    return {
+      db: null,
+      isMemory: true,
+      citizens: memoryDbSingleton.citizens,
+      complaintUpdates: memoryDbSingleton.complaintUpdates,
+      complaints: memoryDbSingleton.complaints,
+      users: memoryDbSingleton.users,
+      notifications: memoryDbSingleton.notifications,
+      appointments: memoryDbSingleton.appointments,
+      otps: memoryDbSingleton.otps,
+      auditLogs: memoryDbSingleton.auditLogs,
+      announcements: memoryDbSingleton.announcements,
+      schemes: memoryDbSingleton.schemes,
+      developmentWorks: memoryDbSingleton.developmentWorks,
+    };
   }
 }

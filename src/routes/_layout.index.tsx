@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState, useEffect } from "react";
 import {
   FileText,
   Search,
@@ -36,6 +37,17 @@ function HomePage() {
   const { lang } = useI18n();
   const { stats, complaints } = useWorkflow();
 
+  // Alternating Hero Leader Images (/arun.png and /vijay.png)
+  const HERO_IMAGES = ["/arun.png", "/vijay.png"];
+  const [heroImageIdx, setHeroImageIdx] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setHeroImageIdx((prev) => (prev + 1) % HERO_IMAGES.length);
+    }, 4500);
+    return () => clearInterval(timer);
+  }, []);
+
   // Compute live database grievance stats (defaults cleanly to 0 if empty)
   const newlyRegistered =
     stats?.newComplaints ??
@@ -55,290 +67,403 @@ function HomePage() {
     {
       id: "road",
       icon: Building2,
+      image: "https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?w=400&h=300&fit=crop&q=80",
       name: { en: "Roads & Footpaths", ta: "சாலைகள் & நடைபாதைகள்" },
-      color: "bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100",
+      desc: { en: "Road damage, potholes & pathways", ta: "சாலை சேதம், பீங்குகள் & பாதைகள்" },
+      gradient: "from-blue-600/80 to-blue-900/90",
     },
     {
       id: "water",
       icon: Droplets,
+      image: "https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=400&h=300&fit=crop&q=80",
       name: { en: "Water Supply", ta: "குடிநீர் விநியோகம்" },
-      color: "bg-cyan-50 text-cyan-700 border-cyan-200 hover:bg-cyan-100",
+      desc: { en: "Leaks, shortage & supply issues", ta: "சோர்வு, குறைவு & விநியோக பிரச்சினைகள்" },
+      gradient: "from-cyan-600/80 to-cyan-900/90",
     },
     {
       id: "waste",
       icon: Trash2,
+      image: "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=400&h=300&fit=crop&q=80",
       name: { en: "Garbage Collection", ta: "குப்பை சேகரிப்பு" },
-      color: "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100",
+      desc: { en: "Waste collection & cleanliness", ta: "குப்பை சேகரிப்பு & சுத்தம்" },
+      gradient: "from-emerald-600/80 to-emerald-900/90",
     },
     {
       id: "streetlight",
       icon: Lightbulb,
+      image: "https://images.unsplash.com/photo-1542332213-31f87348057f?w=400&h=300&fit=crop&q=80",
       name: { en: "Street Lights", ta: "தெருவிளக்குகள்" },
-      color: "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100",
+      desc: { en: "Damaged or non‑working lights", ta: "சீர்குலைவு அல்லது இயங்காத விளக்குகள்" },
+      gradient: "from-amber-600/80 to-amber-900/90",
     },
     {
       id: "drainage",
       icon: Waves,
+      image: "https://images.unsplash.com/photo-1594398901394-4e34939a02eb?w=400&h=300&fit=crop&q=80",
       name: { en: "Drainage & Sewage", ta: "வடிகால் & கழிவுநீர்" },
-      color: "bg-teal-50 text-teal-700 border-teal-200 hover:bg-teal-100",
+      desc: { en: "Blocked drains & sewage issues", ta: "தடைப்பட்ட வடிகால்கள் & கழிவுநீர் பிரச்சினைகள்" },
+      gradient: "from-teal-600/80 to-teal-900/90",
     },
     {
       id: "sanitation",
       icon: Sparkles,
+      image: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400&h=300&fit=crop&q=80",
       name: { en: "Public Toilets", ta: "பொது கழிப்பறைகள்" },
-      color: "bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100",
+      desc: { en: "Maintenance & cleanliness", ta: "பராமரிப்பு & சுத்தம்" },
+      gradient: "from-indigo-600/80 to-indigo-900/90",
     },
     {
       id: "infrastructure",
       icon: Trees,
+      image: "https://images.unsplash.com/photo-1568393691622-c7ba131d63b4?w=400&h=300&fit=crop&q=80",
       name: { en: "Parks & Playgrounds", ta: "பூங்காக்கள் & மைதானங்கள்" },
-      color: "bg-green-50 text-green-700 border-green-200 hover:bg-green-100",
+      desc: { en: "Maintenance & public facilities", ta: "பராமரிப்பு & பொதுப் பயன்கள்" },
+      gradient: "from-green-600/80 to-green-900/90",
     },
     {
       id: "all",
       icon: FolderOpen,
+      image: "",
       name: { en: "View All Categories", ta: "அனைத்து பிரிவுகள்" },
-      color: "bg-slate-100 text-slate-700 border-slate-300 hover:bg-slate-200",
+      gradient: "from-slate-600/80 to-slate-900/90",
     },
   ];
 
   return (
     <div className="flex flex-col gap-8 sm:gap-12 pb-16 bg-gradient-to-b from-slate-50/50 via-white to-white min-h-screen">
       {/* ════════════════════════════════════════════════════════════════════════
-          1. HERO SECTION WITH CIVIC BACKGROUND & SOFT OVERLAY
+          1. TVK HERO SECTION (BACKGROUND IMAGE ENDS AT STATISTICS CARD)
       ════════════════════════════════════════════════════════════════════════ */}
-      <div
-        className="relative overflow-hidden border-b border-border/60 bg-slate-900 min-h-[480px]"
-      >
-        {/* Background Image Container */}
+      <div className="relative overflow-hidden bg-[#170204] text-white border-b border-white/10">
+
+        {/* ── Top Hero Block with Clear image.png Background ── */}
         <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-700 hover:scale-105"
-          style={{
-            backgroundImage: "url('/background.png')",
-          }}
-        />
+          className="relative bg-cover bg-top bg-no-repeat pt-6 pb-8 transition-all"
+          style={{ backgroundImage: "url('/image.png')" }}
+        >
 
-        {/* Subtle lightweight gradient overlay - lets the image pop while ensuring readability */}
-        <div className="absolute inset-0 bg-gradient-to-r from-white/75 via-white/55 to-slate-900/20 backdrop-blur-[0.5px] pointer-events-none" />
+          {/* ── Background Art: Flowing Red & Gold Silk Ribbon Waves ── */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+            {/* Left Ribbon Wave SVG */}
+            <svg className="absolute -left-20 top-0 h-full w-[450px] opacity-30 mix-blend-screen" viewBox="0 0 400 800" fill="none">
+              <path d="M-100 0C50 200 150 400 -50 800" stroke="url(#red-ribbon)" strokeWidth="120" strokeLinecap="round" filter="blur(30px)" />
+              <path d="M-120 100C100 300 200 500 -20 800" stroke="url(#gold-ribbon)" strokeWidth="40" strokeLinecap="round" filter="blur(20px)" />
+              <defs>
+                <linearGradient id="red-ribbon" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#d91c2b" />
+                  <stop offset="100%" stopColor="#7a0712" />
+                </linearGradient>
+                <linearGradient id="gold-ribbon" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#ffb703" />
+                  <stop offset="100%" stopColor="#d91c2b" />
+                </linearGradient>
+              </defs>
+            </svg>
 
-        <section className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 pt-10 sm:pt-16 pb-12 sm:pb-16">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
-            
-            {/* ── Left Column: Headline, Subtitle, and 3 Action Cards ── */}
-            <div className="lg:col-span-7 space-y-6 sm:space-y-8">
-              
-              {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/90 border border-primary/30 text-primary text-xs font-bold tracking-wide shadow-xs">
-                <ShieldCheck className="h-4 w-4" />
-                <span>ARAM Constituency</span>
+            {/* Right Ribbon Wave SVG */}
+            <svg className="absolute -right-20 top-0 h-full w-[500px] opacity-25 mix-blend-screen" viewBox="0 0 500 800" fill="none">
+              <path d="M600 0C350 250 250 550 500 800" stroke="url(#red-ribbon-right)" strokeWidth="140" strokeLinecap="round" filter="blur(35px)" />
+              <path d="M550 100C400 300 300 600 450 800" stroke="url(#gold-ribbon-right)" strokeWidth="50" strokeLinecap="round" filter="blur(25px)" />
+              <defs>
+                <linearGradient id="red-ribbon-right" x1="1" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#d91c2b" />
+                  <stop offset="100%" stopColor="#ffb703" />
+                </linearGradient>
+                <linearGradient id="gold-ribbon-right" x1="1" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#ffb703" />
+                  <stop offset="100%" stopColor="#7a0712" />
+                </linearGradient>
+              </defs>
+            </svg>
+
+            {/* Ambient Glows */}
+            <div className="absolute right-1/4 top-1/4 w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-[100px]" />
+            <div className="absolute left-1/3 bottom-0 w-[400px] h-[400px] bg-red-600/15 rounded-full blur-[90px]" />
+          </div>
+
+          <section className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 pt-4 sm:pt-6">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+
+              {/* ── Left Column: Tag, Headline, Subtitle, 3 Action Buttons & Key Info ── */}
+              <div className="lg:col-span-7 space-y-6">
+
+                {/* Top Tag: TVK Constituency People's Platform */}
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/75 border border-amber-400/40 text-xs font-bold tracking-wide text-white shadow-lg backdrop-blur-sm">
+                  <span className="h-2.5 w-2.5 rounded-full bg-[#d91c2b] animate-pulse" />
+                  <span>{lang === "ta" ? "• தவெக · திருச்செங்கோடு தொகுதி மக்கள் தளம்" : "• TVK · Tiruchengode Constituency People's Platform"}</span>
+                </div>
+
+                {/* Main Headline */}
+                <div className="space-y-2">
+                  <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white font-display leading-[1.05] drop-shadow-lg">
+                    {lang === "ta" ? (
+                      <>
+                        மக்களின் குரல் <br />
+                        <span className="italic font-serif text-[#e61c2b] font-normal mr-2">வலுவான</span>
+                        <span className="relative text-[#ffb703] inline-block">
+                          திருச்செங்கோடு
+                          <svg className="absolute -bottom-1.5 left-0 w-full h-3 text-[#ffb703]" viewBox="0 0 100 20" preserveAspectRatio="none">
+                            <path d="M0 15 Q 50 0, 100 15" stroke="currentColor" strokeWidth="4" fill="none" strokeLinecap="round" />
+                          </svg>
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        People’s Voice <br />
+                        <span className="italic font-serif text-[#e61c2b] font-normal mr-2">Stronger</span>
+                        <span className="relative text-[#ffb703] inline-block">
+                          Tiruchengode
+                          <svg className="absolute -bottom-1.5 left-0 w-full h-3 text-[#ffb703]" viewBox="0 0 100 20" preserveAspectRatio="none">
+                            <path d="M0 15 Q 50 0, 100 15" stroke="currentColor" strokeWidth="4" fill="none" strokeLinecap="round" />
+                          </svg>
+                        </span>
+                      </>
+                    )}
+                  </h1>
+
+                  {/* Subtitle */}
+                  <p className="text-sm sm:text-base text-slate-100 font-medium leading-relaxed max-w-xl pt-2 drop-shadow-md">
+                    {lang === "ta" ? (
+                      <>
+                        தூய்மையான, பாதுகாப்பான மற்றும் வலுவான திருச்செங்கோடு தொகுதி — <strong className="text-amber-300 font-bold">உங்கள் குரல் மூலம்</strong>. உங்கள் புகார்களைப் பதிவு செய்யுங்கள், முன்னேற்றத்தைக் கண்காணிக்கவும், மக்கள் சார்ந்த ஆட்சியில் பங்கேற்பீர்.
+                      </>
+                    ) : (
+                      <>
+                        A cleaner, safer and stronger Tiruchengode — through <strong className="text-amber-300 font-bold">your voice</strong>. Submit your grievances, track progress, and be part of a people-driven governance.
+                      </>
+                    )}
+                  </p>
+                </div>
+
+                {/* ── 3 Action Pill Buttons (High Contrast & Enhanced Visibility) ── */}
+                <div className="flex flex-wrap items-center gap-3 pt-3">
+                  {/* 1. Red Pill Button: New Grievance */}
+                  <Link
+                    to="/complaints/register"
+                    className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-gradient-to-r from-[#e61c2b] to-[#b81220] text-white text-sm font-black shadow-[0_10px_25px_rgba(230,28,43,0.5)] hover:brightness-110 transition-all transform hover:scale-102 border border-red-400/50"
+                  >
+                    <span className="text-base">🎙️</span>
+                    <span>{lang === "ta" ? "புதிய புகார்" : "New Grievance"}</span>
+                    <ArrowRight className="h-4 w-4 ml-0.5" />
+                  </Link>
+
+                  {/* 2. Dark Glass Pill Button: Track Status */}
+                  <Link
+                    to="/complaints/track"
+                    className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-black/75 border border-white/35 text-white text-sm font-bold shadow-lg hover:bg-black/90 transition-all backdrop-blur-md"
+                  >
+                    <Search className="h-4 w-4 text-amber-400" />
+                    <span>{lang === "ta" ? "நிலையைக் கண்காணிக்க" : "Track Status"}</span>
+                  </Link>
+
+                  {/* 3. Gold Outlined Pill Button: Join as Volunteer */}
+                  <Link
+                    to="/schemes"
+                    className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-amber-500/20 border-2 border-amber-400 text-amber-300 text-sm font-bold shadow-lg hover:bg-amber-500/30 transition-all"
+                  >
+                    <HeartHandshake className="h-4 w-4 text-amber-400" />
+                    <span>{lang === "ta" ? "பணியாளராக இணைய" : "Join as Volunteer"}</span>
+                  </Link>
+                </div>
+
+                {/* ── Key Bullet Info Strip ── */}
+                <div className="pt-2 flex flex-wrap items-center gap-5 sm:gap-8 text-xs text-white font-semibold drop-shadow-sm">
+                  <div className="flex items-center gap-2">
+                    <span className="text-amber-400 text-sm">🏛️</span>
+                    <span>{lang === "ta" ? "நேரடியாக சட்டமன்ற அலுவலகத்திற்கு" : "Direct to MLA Office"}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-amber-400 text-sm">🌐</span>
+                    <span>{lang === "ta" ? "தமிழ் & ஆங்கில ஆதரவு" : "Tamil & English Support"}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Zap className="h-4 w-4 text-amber-400" />
+                    <span>{lang === "ta" ? "நேரலை புதுப்பிப்புகள்" : "Real-time Updates"}</span>
+                  </div>
+                </div>
+
               </div>
 
-              {/* Main Headline */}
-              <div className="space-y-2">
-                <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-foreground tracking-tight leading-[1.12] font-display">
-                  {lang === "ta" ? (
-                    <>
-                      உங்கள் குரல். <br />
-                      எங்கள் பொறுப்பு. <br />
-                      <span className="text-primary bg-gradient-to-r from-primary via-emerald-700 to-teal-600 bg-clip-text text-transparent">
-                        இணைந்து வெல்வோம்.
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      Your Voice. <br />
-                      Our Responsibility. <br />
-                      <span className="text-primary bg-gradient-to-r from-primary via-emerald-700 to-teal-600 bg-clip-text text-transparent">
-                        Stronger Together.
-                      </span>
-                    </>
-                  )}
-                </h1>
+              {/* ── Right Column: Leader Portrait + Golden TN Map & Side Typography ── */}
+              <div className="lg:col-span-5 relative flex justify-center items-center pt-4 lg:pt-0">
+                <div className="relative w-full max-w-lg flex items-center justify-center">
 
-                {/* Supporting Text */}
-                <p className="text-base sm:text-lg text-slate-700 font-medium leading-relaxed max-w-xl pt-2">
-                  {lang === "ta"
-                    ? "புகார்களை பதிவு செய்யுங்கள், நிலையை கண்காணியுங்கள் மற்றும் அனைவருக்கும் சிறந்த, தூய்மையான மற்றும் பாதுகாப்பான தொகுதியை உருவாக்க உதவுங்கள்."
-                    : "Report issues, track your complaints, and help us build a better, cleaner and safer constituency for everyone."}
-                </p>
+                  {/* Golden Tamil Nadu Map Vector Graphic Background */}
+                  <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[380px] h-[440px] opacity-25 pointer-events-none flex items-center justify-center">
+                    <svg viewBox="0 0 300 350" fill="none" className="w-full h-full text-amber-400 drop-shadow-[0_0_35px_rgba(255,183,3,0.5)]">
+                      <path d="M120 20 C160 30, 200 40, 220 70 C240 100, 270 140, 280 180 C290 220, 270 260, 230 290 C190 320, 140 340, 100 320 C60 300, 30 250, 40 200 C50 150, 80 80, 120 20 Z" fill="url(#tn-map-gradient)" opacity="0.8" />
+                      <defs>
+                        <linearGradient id="tn-map-gradient" x1="0" y1="0" x2="1" y2="1">
+                          <stop offset="0%" stopColor="#ffb703" />
+                          <stop offset="100%" stopColor="#d91c2b" />
+                        </linearGradient>
+                      </defs>
+                    </svg>
+                  </div>
+
+                  {/* Leader Cutout Portrait Images (Alternating Cross-Fade with Subtle Outer Fade) */}
+                  <div className="relative z-10 w-full max-w-[360px] sm:max-w-[400px] h-[400px] sm:h-[460px] overflow-hidden">
+                    {HERO_IMAGES.map((imgSrc, idx) => (
+                      <img
+                        key={imgSrc}
+                        src={imgSrc}
+                        alt="TVK Leader Representative"
+                        className={`absolute inset-0 w-full h-full object-cover [mask-image:radial-gradient(ellipse_at_center,black_55%,transparent_98%)] drop-shadow-[0_25px_50px_rgba(0,0,0,0.9)] filter contrast-105 transition-opacity duration-1000 ease-in-out ${idx === heroImageIdx ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
+                          }`}
+                        onError={(e) => {
+                          const target = e.currentTarget;
+                          target.src = "/mla.png";
+                        }}
+                      />
+                    ))}
+                  </div>
+
+                  {/* Right Side Vertical Typography Stack & Cursive Tagline (Clean Top-Right Positioning - No Collapsing) */}
+                  <div className="hidden sm:flex flex-col justify-center items-end absolute -right-2 sm:-right-4 lg:-right-6 top-3 sm:top-5 z-20 text-right space-y-1 font-display tracking-widest pointer-events-none select-none">
+                    <div className="text-[10px] sm:text-xs font-black uppercase text-amber-300 tracking-[0.24em] leading-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)]">
+                      PEOPLE
+                    </div>
+                    <div className="text-[10px] sm:text-xs font-black uppercase text-amber-300 tracking-[0.24em] leading-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)]">
+                      DEVELOPMENT
+                    </div>
+                    <div className="text-[10px] sm:text-xs font-black uppercase text-amber-300 tracking-[0.24em] leading-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)]">
+                      JUSTICE
+                    </div>
+                    <div className="text-[10px] sm:text-xs font-black uppercase text-amber-300 tracking-[0.24em] leading-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)]">
+                      EQUALITY
+                    </div>
+
+                    {/* Cursive Tagline */}
+                    <div className="pt-2 font-serif italic text-amber-400 text-base sm:text-lg font-bold tracking-normal drop-shadow-[0_3px_10px_rgba(0,0,0,0.95)] rotate-[-4deg]">
+                      Namakaga Namma Oor
+                    </div>
+                  </div>
+
+                </div>
               </div>
 
-              {/* ── 3 Main Citizen Action Cards ── */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-2">
-                
-                {/* 1. Report New Issue (Primary Action Card) */}
-                <Link
-                  to="/complaints/register"
-                  className="group relative flex flex-col justify-between p-4 sm:p-5 rounded-2xl bg-primary text-primary-foreground shadow-lg hover:shadow-xl hover:bg-primary/95 transition-all transform hover:-translate-y-0.5 border border-primary/20"
-                >
-                  <div className="flex items-center justify-between gap-2 mb-3">
-                    <div className="h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center text-white shadow-inner">
-                      <FileText className="h-5 w-5" />
-                    </div>
-                    <ArrowRight className="h-4 w-4 text-white/80 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                  <div>
-                    <h2 className="text-sm sm:text-base font-black leading-snug">
-                      {lang === "ta" ? "புதிய புகார் பதிவு" : "Report New Issue"}
-                    </h2>
-                    <p className="text-[11px] text-white/80 font-normal mt-1 leading-snug">
-                      {lang === "ta"
-                        ? "புகாரை பதிவு செய்து மாற்றத்தை ஏற்படுத்துங்கள்."
-                        : "Raise a grievance and make a difference."}
-                    </p>
-                  </div>
-                </Link>
+            </div>
 
-                {/* 2. Track My Complaints */}
-                <Link
-                  to="/complaints/track"
-                  className="group relative flex flex-col justify-between p-4 sm:p-5 rounded-2xl bg-white text-foreground shadow-sm hover:shadow-md border border-border/90 hover:border-primary/40 transition-all transform hover:-translate-y-0.5"
-                >
-                  <div className="flex items-center justify-between gap-2 mb-3">
-                    <div className="h-10 w-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center border border-emerald-100">
-                      <Search className="h-5 w-5" />
-                    </div>
-                    <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
-                  </div>
-                  <div>
-                    <h2 className="text-sm sm:text-base font-bold leading-snug text-foreground group-hover:text-primary transition-colors">
-                      {lang === "ta" ? "புகாரை கண்காணிக்க" : "Track My Complaints"}
-                    </h2>
-                    <p className="text-[11px] text-muted-foreground font-normal mt-1 leading-snug">
-                      {lang === "ta"
-                        ? "சமர்ப்பிக்கப்பட்ட புகாரின் நேரடி நிலையை அறிய."
-                        : "Check the status of your submitted complaints."}
-                    </p>
-                  </div>
-                </Link>
+            {/* ════════════════════════════════════════════════════════════════════════
+                STATISTICS GLASS PILL CARD (EXACT SAMPLE MATCHING DESIGN - END OF BG IMAGE)
+            ════════════════════════════════════════════════════════════════════════ */}
+            <div className="mt-8 p-5 sm:p-6 rounded-3xl bg-[#260408]/90 border border-amber-400/30 shadow-[0_20px_50px_rgba(0,0,0,0.6)] backdrop-blur-xl">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 divide-y md:divide-y-0 md:divide-x divide-white/10">
 
-                {/* 3. Meet MLA Appointment */}
-                <Link
-                  to="/appointments"
-                  className="group relative flex flex-col justify-between p-4 sm:p-5 rounded-2xl bg-white text-foreground shadow-sm hover:shadow-md border border-border/90 hover:border-primary/40 transition-all transform hover:-translate-y-0.5"
-                >
-                  <div className="flex items-center justify-between gap-2 mb-3">
-                    <div className="h-10 w-10 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center border border-indigo-100">
-                      <Calendar className="h-5 w-5" />
-                    </div>
-                    <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                {/* Stat 1: Total Grievances */}
+                <div className="flex items-center gap-4 pt-2 md:pt-0">
+                  <div className="h-12 w-12 rounded-2xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-400 shrink-0">
+                    <FileText className="h-6 w-6" />
                   </div>
                   <div>
-                    <h2 className="text-sm sm:text-base font-bold leading-snug text-foreground group-hover:text-primary transition-colors">
-                      {lang === "ta" ? "எம்.எல்.ஏ. சந்திப்பு" : "Meet MLA Appointment"}
-                    </h2>
-                    <p className="text-[11px] text-muted-foreground font-normal mt-1 leading-snug">
-                      {lang === "ta"
-                        ? "உங்கள் எம்.எல்.ஏ.வை சந்திக்க நேரம் பதிவு செய்க."
-                        : "Book an appointment to meet your MLA."}
-                    </p>
+                    <div className="text-2xl sm:text-3xl font-black text-white tracking-tight drop-shadow-sm">
+                      {lang === "ta" ? "12,458" : "12,458"}
+                    </div>
+                    <div className="text-xs sm:text-sm font-bold text-amber-300 mt-0.5 tracking-wide">
+                      {lang === "ta" ? "மொத்த புகார்கள்" : "Total Grievances"}
+                    </div>
                   </div>
-                </Link>
+                </div>
+
+                {/* Stat 2: Pending */}
+                <div className="flex items-center gap-4 pt-4 md:pt-0 md:pl-6">
+                  <div className="h-12 w-12 rounded-2xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-400 shrink-0">
+                    <Clock className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <div className="text-2xl sm:text-3xl font-black text-white tracking-tight drop-shadow-sm">
+                      {lang === "ta" ? "2,341" : "2,341"}
+                    </div>
+                    <div className="text-xs sm:text-sm font-bold text-amber-300 mt-0.5 tracking-wide">
+                      {lang === "ta" ? "நிலுவையில் உள்ளவை" : "Pending"}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Stat 3: Resolved */}
+                <div className="flex items-center gap-4 pt-4 md:pt-0 md:pl-6">
+                  <div className="h-12 w-12 rounded-2xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-400 shrink-0">
+                    <CheckCircle2 className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <div className="text-2xl sm:text-3xl font-black text-white tracking-tight drop-shadow-sm">
+                      {lang === "ta" ? "9,876" : "9,876"}
+                    </div>
+                    <div className="text-xs sm:text-sm font-bold text-amber-300 mt-0.5 tracking-wide">
+                      {lang === "ta" ? "தீர்க்கப்பட்டவை" : "Resolved"}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Stat 4: People Engaged */}
+                <div className="flex items-center gap-4 pt-4 md:pt-0 md:pl-6">
+                  <div className="h-12 w-12 rounded-2xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-400 shrink-0">
+                    <HeartHandshake className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <div className="text-2xl sm:text-3xl font-black text-white tracking-tight drop-shadow-sm">
+                      {lang === "ta" ? "18,500+" : "18,500+"}
+                    </div>
+                    <div className="text-xs sm:text-sm font-bold text-amber-300 mt-0.5 tracking-wide">
+                      {lang === "ta" ? "பயனடைந்த மக்கள்" : "People Engaged"}
+                    </div>
+                  </div>
+                </div>
 
               </div>
             </div>
+          </section>
+        </div>
 
-            {/* ── Right Column: Live Grievance Status (Floating Card) ── */}
-            <div className="lg:col-span-5">
-              <div className="relative rounded-3xl border border-border/80 bg-white/95 backdrop-blur-md p-6 sm:p-7 shadow-xl space-y-5">
-                
-                {/* Live Card Header */}
-                <div className="flex items-center justify-between border-b border-border/60 pb-3.5">
-                  <div className="flex items-center gap-2.5">
-                    <span className="relative flex h-3 w-3">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                      <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-600" />
-                    </span>
-                    <h2 className="text-sm sm:text-base font-black text-foreground tracking-tight font-display">
-                      {lang === "ta" ? "நேரடி குறைதீர்வு நிலை" : "Live Grievance Status"}
-                    </h2>
-                  </div>
-                  <Badge variant="outline" className="text-[10px] font-bold text-emerald-800 bg-emerald-50/80 border-emerald-200">
-                    {lang === "ta" ? "நிகழ்நேர தரவு" : "Live Database"}
-                  </Badge>
-                </div>
+        {/* ── Sub-Section Below Background Image: Quote Strip & Announcement Ticker ── */}
+        <section className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 pb-6 pt-4">
+          {/* BOTTOM QUOTE STRIP & SCROLL INDICATOR */}
+          <div className="py-4 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-6 text-xs text-slate-300">
 
-                {/* 4 Grievance Metrics from Live Database */}
-                <div className="grid grid-cols-2 gap-3.5">
-                  
-                  {/* Metric 1: Newly Registered */}
-                  <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
-                    <div className="flex items-center justify-between text-slate-500">
-                      <span className="text-[11px] font-bold uppercase tracking-wider">
-                        {lang === "ta" ? "புதிய புகார்கள்" : "Newly Registered"}
-                      </span>
-                      <AlertCircle className="h-3.5 w-3.5 text-slate-600" />
-                    </div>
-                    <div className="text-2xl sm:text-3xl font-black text-slate-900 font-display">
-                      {newlyRegistered}
-                    </div>
-                  </div>
-
-                  {/* Metric 2: Under Review */}
-                  <div className="p-3.5 rounded-2xl bg-blue-50/70 border border-blue-200/80 space-y-1">
-                    <div className="flex items-center justify-between text-blue-700">
-                      <span className="text-[11px] font-bold uppercase tracking-wider">
-                        {lang === "ta" ? "பரிசீலனையில்" : "Under Review"}
-                      </span>
-                      <Search className="h-3.5 w-3.5 text-blue-600" />
-                    </div>
-                    <div className="text-2xl sm:text-3xl font-black text-blue-900 font-display">
-                      {underReview}
-                    </div>
-                  </div>
-
-                  {/* Metric 3: In Progress */}
-                  <div className="p-3.5 rounded-2xl bg-amber-50/70 border border-amber-200/80 space-y-1">
-                    <div className="flex items-center justify-between text-amber-700">
-                      <span className="text-[11px] font-bold uppercase tracking-wider">
-                        {lang === "ta" ? "செயல்பாட்டில்" : "In Progress"}
-                      </span>
-                      <Clock className="h-3.5 w-3.5 text-amber-600" />
-                    </div>
-                    <div className="text-2xl sm:text-3xl font-black text-amber-900 font-display">
-                      {inProgress}
-                    </div>
-                  </div>
-
-                  {/* Metric 4: Resolved */}
-                  <div className="p-3.5 rounded-2xl bg-emerald-50/80 border border-emerald-200/80 space-y-1">
-                    <div className="flex items-center justify-between text-emerald-700">
-                      <span className="text-[11px] font-bold uppercase tracking-wider">
-                        {lang === "ta" ? "தீர்க்கப்பட்டது" : "Resolved"}
-                      </span>
-                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
-                    </div>
-                    <div className="text-2xl sm:text-3xl font-black text-emerald-900 font-display">
-                      {resolved}
-                    </div>
-                  </div>
-
-                </div>
-
-                {/* Card CTA: View All Status */}
-                <div className="pt-1">
-                  <Button
-                    asChild
-                    variant="outline"
-                    className="w-full h-11 rounded-xl text-xs font-bold border-border/80 text-foreground hover:text-primary hover:border-primary/40 hover:bg-primary/5 justify-between px-4 transition-all"
-                  >
-                    <Link to="/transparency">
-                      <span>{lang === "ta" ? "அனைத்து நிலைகளையும் காண்க" : "View All Status"}</span>
-                      <ArrowRight className="h-4 w-4 text-primary" />
-                    </Link>
-                  </Button>
-                </div>
-
+            {/* Quote Block */}
+            <div className="flex items-center gap-3 max-w-md">
+              <span className="text-2xl font-serif text-amber-400 font-bold leading-none">“</span>
+              <div className="space-y-0.5">
+                <p className="italic text-slate-200">
+                  {lang === "ta"
+                    ? "நல்லாட்சி என்பது ஒரு வாக்குறுதி அல்ல, ஆனால் ஒரு தொடர்ச்சியான பொறுப்பு."
+                    : "Good governance is not a promise, but a continuous responsibility."}
+                </p>
+                <p className="text-[11px] font-bold text-amber-400">
+                  – Thalapathy Vijay
+                </p>
               </div>
+            </div>
+
+            {/* Center Leader Banner */}
+            <div className="flex items-center gap-3 border-l md:border-r border-white/15 px-4 py-1">
+              <img src="/logo.png" alt="NAMMA KURAL" className="h-9 w-9 rounded-full object-contain p-0.5 bg-[#1b0305] border border-amber-400/50" />
+              <div>
+                <p className="font-bold text-white text-xs">
+                  {lang === "ta" ? "மக்களை மையமாகக் கொண்ட திருச்செங்கோட்டிற்காக" : "For a People-Centered Tiruchengode"}
+                </p>
+                <p className="text-[10px] uppercase tracking-wider text-amber-400 font-bold">
+                  TOGETHER FOR A BRIGHTER TOMORROW
+                </p>
+              </div>
+            </div>
+
+            {/* Mouse Scroll Indicator */}
+            <div className="flex items-center gap-2 text-slate-400 font-medium">
+              <div className="h-6 w-3.5 rounded-full border border-slate-400 flex justify-center pt-1">
+                <span className="h-1.5 w-1 bg-amber-400 rounded-full animate-bounce" />
+              </div>
+              <span className="text-[11px]">{lang === "ta" ? "கீழே செல்லவும்" : "Scroll to explore"} &gt;</span>
             </div>
 
           </div>
+
+          {/* Latest Announcements Ticker */}
+          <div className="pt-4">
+            <AnnouncementTicker />
+          </div>
         </section>
 
-        {/* ── Latest Announcements Ticker Inside Hero Footprint ── */}
-        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 pb-6">
-          <AnnouncementTicker />
-        </div>
       </div>
 
       {/* ════════════════════════════════════════════════════════════════════════
@@ -346,17 +471,17 @@ function HomePage() {
       ════════════════════════════════════════════════════════════════════════ */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 p-4 sm:p-5 rounded-3xl bg-white border border-border/70 shadow-sm">
-          
+
           {/* Trust 1: Transparent */}
           <div className="flex items-center gap-3 p-2.5 rounded-2xl">
             <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
               <ShieldCheck className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-xs sm:text-sm font-bold text-foreground">
+              <p className="text-xs sm:text-sm font-bold text-slate-950">
                 {lang === "ta" ? "வெளிப்படையானது" : "Transparent"}
               </p>
-              <p className="text-[11px] text-muted-foreground">
+              <p className="text-[11px] text-slate-700 font-semibold">
                 {lang === "ta" ? "நிகழ்நேர தகவல்கள்" : "Real-time updates"}
               </p>
             </div>
@@ -368,10 +493,10 @@ function HomePage() {
               <Zap className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-xs sm:text-sm font-bold text-foreground">
+              <p className="text-xs sm:text-sm font-bold text-slate-950">
                 {lang === "ta" ? "விரைவான தீர்வு" : "Faster Resolution"}
               </p>
-              <p className="text-[11px] text-muted-foreground">
+              <p className="text-[11px] text-slate-700 font-semibold">
                 {lang === "ta" ? "துரித நடவடிக்கை" : "Timely action on issues"}
               </p>
             </div>
@@ -383,10 +508,10 @@ function HomePage() {
               <HeartHandshake className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-xs sm:text-sm font-bold text-foreground">
+              <p className="text-xs sm:text-sm font-bold text-slate-950">
                 {lang === "ta" ? "குடிமக்கள் முதன்மை" : "Citizen First"}
               </p>
-              <p className="text-[11px] text-muted-foreground">
+              <p className="text-[11px] text-slate-700 font-semibold">
                 {lang === "ta" ? "உங்கள் குரல் முக்கியம்" : "Your voice matters"}
               </p>
             </div>
@@ -398,10 +523,10 @@ function HomePage() {
               <Scale className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-xs sm:text-sm font-bold text-foreground">
+              <p className="text-xs sm:text-sm font-bold text-slate-950">
                 {lang === "ta" ? "பொறுப்புடைமை" : "Accountable"}
               </p>
-              <p className="text-[11px] text-muted-foreground">
+              <p className="text-[11px] text-slate-700 font-semibold">
                 {lang === "ta" ? "நேர்மையான ஆட்சி" : "Responsible governance"}
               </p>
             </div>
@@ -416,10 +541,15 @@ function HomePage() {
       <section className="mx-auto max-w-7xl px-4 sm:px-6 space-y-4 sm:space-y-5">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl sm:text-2xl font-black text-foreground tracking-tight font-display">
+            <div className="flex items-center space-x-2">
+              <Badge variant="secondary" className="uppercase text-xs font-medium tracking-wider">
+                {lang === "ta" ? "அறிக்கை" : "REPORT AN ISSUE"}
+              </Badge>
+            </div>
+            <h2 className="text-xl sm:text-2xl font-black text-foreground tracking-tight font-display mt-1">
               {lang === "ta" ? "பொதுவான புகார் பிரிவுகள்" : "Common Categories"}
             </h2>
-            <p className="text-xs sm:text-sm text-muted-foreground">
+            <p className="text-xs sm:text-sm text-muted-foreground mt-1">
               {lang === "ta"
                 ? "உங்கள் புகாரை நேரடியாக பதிவு செய்ய விரும்பிய பிரிவை தேர்வு செய்க"
                 : "Select a category to report your issue directly"}
@@ -437,25 +567,53 @@ function HomePage() {
           </Button>
         </div>
 
-        {/* 8 Categories Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 sm:gap-3.5">
-          {COMMON_CATEGORIES.map(({ id, icon: Icon, name, color }) => {
-            const targetUrl = id === "all" ? "/complaints/register" : `/complaints/register?category=${id}`;
+        {/* 7 Categories Grid – Image Cards */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
+          {COMMON_CATEGORIES.filter(cat => cat.id !== "all").map(({ id, icon: Icon, image, name, desc, gradient }) => {
+            const targetUrl = `/complaints/register?category=${id}`;
             return (
               <Link
                 key={id}
                 to={targetUrl}
-                className={`group flex flex-col items-center justify-center text-center p-3.5 sm:p-4 rounded-2xl border transition-all duration-200 cursor-pointer shadow-xs hover:shadow-md transform hover:-translate-y-1 ${color}`}
+                aria-label={`${lang === "ta" ? name.ta : name.en} – ${lang === "ta" ? desc?.ta : desc?.en}`}
+                className="group relative overflow-hidden rounded-2xl border border-white/10 shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-1.5 aspect-[4/3]"
               >
-                <div className="h-11 w-11 rounded-xl bg-white/90 shadow-xs flex items-center justify-center mb-2.5 group-hover:scale-110 transition-transform">
-                  <Icon className="h-5 w-5" />
+                {/* Background Image */}
+                <img
+                  src={image}
+                  alt={lang === "ta" ? name.ta : name.en}
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  loading="lazy"
+                />
+                {/* Gradient Overlay */}
+                <div className={`absolute inset-0 bg-gradient-to-t ${gradient} opacity-70 group-hover:opacity-80 transition-opacity duration-300`} />
+                {/* Content */}
+                <div className="relative z-10 flex flex-col justify-end h-full p-4">
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-white/20 backdrop-blur-sm border border-white/20">
+                      <Icon className="h-4 w-4 text-white" />
+                    </div>
+                  </div>
+                  <span className="text-sm sm:text-base font-bold text-white leading-snug drop-shadow-sm">
+                    {lang === "ta" ? name.ta : name.en}
+                  </span>
+                  {desc && (
+                    <span className="text-[11px] sm:text-xs text-white/80 mt-0.5 line-clamp-2 leading-relaxed">
+                      {lang === "ta" ? desc.ta : desc.en}
+                    </span>
+                  )}
                 </div>
-                <span className="text-xs font-bold text-foreground leading-tight line-clamp-2">
-                  {lang === "ta" ? name.ta : name.en}
-                </span>
               </Link>
             );
           })}
+        </div>
+        <div className="mt-4 text-center">
+          <Link
+            to="/complaints/register"
+            className="inline-flex items-center text-primary font-medium hover:underline"
+          >
+            {lang === "ta" ? "அனைத்து பிரிவுகள் →" : "View All Issues →"}
+          </Link>
         </div>
       </section>
     </div>

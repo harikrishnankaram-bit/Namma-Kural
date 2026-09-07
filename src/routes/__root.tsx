@@ -10,7 +10,6 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
-import { reportLovableError } from "../lib/lovable-error-reporting";
 import { I18nProvider } from "../lib/i18n";
 import { AuthProvider } from "../lib/auth";
 import { WorkflowProvider } from "../lib/workflow";
@@ -40,9 +39,7 @@ function NotFoundComponent() {
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
   const router = useRouter();
-  useEffect(() => {
-    reportLovableError(error, { boundary: "tanstack_root_error_component" });
-  }, [error]);
+
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -80,14 +77,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "ARAM — Citizen-first Digital Governance" },
+      { title: "NAMMA KURAL — Citizen-first Digital Governance" },
       {
         name: "description",
         content:
-          "ARAM is the citizen-first digital governance platform for the Legislative Constituency. Report issues, track complaints, access government schemes and meet your MLA.",
+          "NAMMA KURAL is the citizen-first digital governance platform for the Legislative Constituency. Report issues, track complaints, access government schemes and meet your MLA.",
       },
-      { name: "author", content: "ARAM" },
-      { property: "og:title", content: "ARAM — Citizen-first Digital Governance" },
+      { name: "author", content: "NAMMA KURAL" },
+      { property: "og:title", content: "NAMMA KURAL — Citizen-first Digital Governance" },
       {
         property: "og:description",
         content: "Report issues, track complaints, access schemes and meet your MLA.",
@@ -97,8 +94,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "icon", href: "/aram.png", type: "image/png" },
-      { rel: "apple-touch-icon", href: "/aram.png" },
+      { rel: "icon", href: "/logo.png", type: "image/png" },
+      { rel: "apple-touch-icon", href: "/logo.png" },
       {
         rel: "preconnect",
         href: "https://fonts.googleapis.com",

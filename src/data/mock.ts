@@ -145,12 +145,11 @@ export const PUBLIC_STATS = {
   citizenSatisfactionPct: 0,
   activeProjects: 2,
   schemesAvailable: 1,
-  // Additional fields used in transparency page
   avgResolutionDays: 0,
   satisfaction: 0,
   projects: 0,
   completedProjects: 0,
-  monthly: [], // Array of { month: string, received: number, resolved: number }
+  monthly: [],
 };
 
 export const MOCK_PROJECTS: Project[] = [
@@ -159,36 +158,36 @@ export const MOCK_PROJECTS: Project[] = [
     name: { en: "Underground Storm Water Drainage Network", ta: "நிலத்தடி மழைநீர் வடிகால் கட்டமைப்பு" },
     status: "in_progress",
     departmentId: "works",
-    wardId: "w-110",
-    location: "Ward 110 (MGR Nagar)",
+    wardId: "w-01",
+    location: "Tiruchengode Main Road (Ward 1)",
     progress: 68,
     start: "2026-01-15",
     end: "2026-10-30",
     budget: "₹ 4.80 Cr",
     description: {
-      en: "Comprehensive stormwater drain network preventing monsoon waterlogging across low-lying residential sectors.",
-      ta: "தாழ்வான குடியிருப்புப் பகுதிகளில் பருவமழை நீர் தேங்குவதைத் தடுக்கும் மழைநீர் வடிகால் திட்டம்.",
+      en: "Comprehensive stormwater drain network preventing monsoon waterlogging across low-lying residential sectors in Tiruchengode.",
+      ta: "திருச்செங்கோடு தாழ்வான குடியிருப்புப் பகுதிகளில் பருவமழை நீர் தேங்குவதைத் தடுக்கும் வடிகால் திட்டம்.",
     },
     beneficiaries: "14,500 Citizens",
     images: {
-      before: "https://images.unsplash.com/photo-1594398901394-4e34939a4fd0?auto=format&fit=crop&w=900&q=60",
+      before: "https://images.unsplash.com/photo-1594398901394-4e34939a02eb?auto=format&fit=crop&w=900&q=60",
       progress: "https://images.unsplash.com/photo-1516216628859-9bccecab13ca?auto=format&fit=crop&w=900&q=60",
     },
   },
   {
     id: "prj-002",
-    name: { en: "Smart High School Modernization", ta: "அரசு மேல்நிலைப் பள்ளி நவீனமயமாக்கல்" },
+    name: { en: "Government Higher Secondary School Modernization", ta: "அரசு மேல்நிலைப் பள்ளி நவீனமயமாக்கல்" },
     status: "in_progress",
     departmentId: "health",
-    wardId: "w-112",
-    location: "Ward 112 (Anna Nagar)",
+    wardId: "w-04",
+    location: "Sankari Road Sector (Ward 4)",
     progress: 85,
     start: "2026-03-01",
     end: "2026-08-30",
     budget: "₹ 1.95 Cr",
     description: {
-      en: "Smart classrooms, STEM science laboratory, computer center, and sports court upgrades.",
-      ta: "ஸ்மார்ட் வகுப்பறைகள், STEM அறிவியல் ஆய்வகம், கணினி மையம் மற்றும் விளையாட்டு மைதான மேம்பாடு.",
+      en: "Smart classrooms, STEM science laboratory, computer center, and sports court upgrades in Tiruchengode.",
+      ta: "திருச்செங்கோடு அரசுப் பள்ளியில் ஸ்மார்ட் வகுப்பறைகள், STEM அறிவியல் ஆய்வகம் மற்றும் விளையாட்டு மைதான மேம்பாடு.",
     },
     beneficiaries: "1,200 Students",
     images: {
@@ -204,7 +203,7 @@ export const MOCK_SCHEMES: Scheme[] = [
     name: { en: "Kalaignar Magalir Urimai Thittam", ta: "கலைஞர் மகளிர் உரிமைத் திட்டம்" },
     tag: { en: "Direct Benefit Transfer", ta: "நேரடி பணப் பலன்" },
     overview: {
-      en: "Monthly financial assistance of ₹1,000 provided directly to eligible women family heads to support economic empowerment.",
+      en: "Monthly financial assistance of ₹1,000 provided directly to eligible women family heads in Tiruchengode.",
       ta: "குடும்பப் பெண் தலைவர்களின் பொருளாதார மேம்பாட்டிற்காக மாதம் ₹1,000 வழங்கும் திட்டம்.",
     },
     department: "Social Welfare",
@@ -246,8 +245,8 @@ export const MOCK_UPDATES: UpdateItem[] = [
     category: { en: "Constituency Notice", ta: "தொகுதி அறிவிப்பு" },
     title: { en: "Special Grievance Redressal Day — This Saturday", ta: "சிறப்பு குறைதீர்க்கும் முகாம் — இந்த சனிக்கிழமை" },
     description: {
-      en: "Hon'ble MLA will meet citizens directly at the Constituency Taluk Office from 10:00 AM to 02:00 PM.",
-      ta: "சட்டமன்ற உறுப்பினர் அவர்கள் தொகுதி தாலுகா அலுவலகத்தில் காலை 10:00 மணி முதல் மதியம் 02:00 மணி வரை பொதுமக்களை நேரடியாக சந்திக்கிறார்.",
+      en: "Hon'ble MLA will meet citizens directly at Tiruchengode Taluk Office from 10:00 AM to 02:00 PM.",
+      ta: "சட்டமன்ற உறுப்பினர் அவர்கள் திருச்செங்கோடு தாலுகா அலுவலகத்தில் காலை 10:00 மணி முதல் மதியம் 02:00 மணி வரை பொதுமக்களை நேரடியாக சந்திக்கிறார்.",
     },
     date: "2026-08-16",
   },
@@ -257,8 +256,8 @@ export const MOCK_UPDATES: UpdateItem[] = [
     category: { en: "Development Work", ta: "வளர்ச்சி பணி" },
     title: { en: "Underground Storm Drain Work 68% Completed", ta: "மழைநீர் வடிகால் பணி 68% முடிவடைந்தது" },
     description: {
-      en: "Ward 110 drainage channel connection ongoing to prevent waterlogging during upcoming monsoon.",
-      ta: "வார்டு 110-ல் பருவமழைக்கு முன் வெள்ள நீர் தேங்குவதை தவிர்க்கும் வடிகால் இணைப்பு பணிகள் துரிதமாக நடைபெறுகின்றன.",
+      en: "Tiruchengode Ward 1 drainage channel connection ongoing to prevent waterlogging during upcoming monsoon.",
+      ta: "திருச்செங்கோடு வார்டு 1-ல் பருவமழைக்கு முன் வெள்ள நீர் தேங்குவதை தவிர்க்கும் வடிகால் இணைப்பு பணிகள் துரிதமாக நடைபெறுகின்றன.",
     },
     date: "2026-08-15",
   },

@@ -343,7 +343,7 @@ export function CitizenDashboardPage() {
   );
 
   const displayMobile = maskMobile(effectiveCitizen.mobile);
-  const displayName = effectiveCitizen.fullName || (lang === "ta" ? "அரசு குடிமகன்" : "ARAM Citizen");
+  const displayName = effectiveCitizen.fullName || (lang === "ta" ? "அரசு குடிமகன்" : "Citizen");
   const initial = displayName.charAt(0).toUpperCase();
   const ward = effectiveCitizen.wardId ? WARDS.find((w) => w.id === effectiveCitizen.wardId) : null;
 
@@ -391,23 +391,23 @@ export function CitizenDashboardPage() {
           </div>
           <div>
             <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="text-xl sm:text-2xl font-black text-foreground font-display tracking-tight">
+              <h1 className="text-xl sm:text-2xl font-black text-slate-950 font-display tracking-tight">
                 {displayName}
               </h1>
-              <Badge className="bg-primary/10 text-primary border-0 text-xs font-semibold">
+              <Badge className="bg-primary/10 text-primary border-0 text-xs font-bold">
                 {lang === "ta" ? "குடிமகன்" : "Citizen"}
               </Badge>
               {citizenSession && (
-                <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px] font-bold gap-1">
+                <Badge variant="outline" className="bg-emerald-50 text-emerald-800 border-emerald-300 text-[10px] font-extrabold gap-1">
                   <ShieldCheck className="h-3 w-3" />
                   {lang === "ta" ? "OTP சரிபார்ப்பு" : "OTP Verified"}
                 </Badge>
               )}
             </div>
-            <div className="flex items-center gap-4 text-xs text-muted-foreground mt-1.5 flex-wrap">
+            <div className="flex items-center gap-4 text-xs text-slate-800 font-semibold mt-1.5 flex-wrap">
               <span className="flex items-center gap-1.5">
                 <Phone className="h-3.5 w-3.5 text-primary" />
-                <span className="font-semibold tracking-wide">+91 {displayMobile}</span>
+                <span className="font-bold tracking-wide">+91 {displayMobile}</span>
               </span>
               {ward && (
                 <span className="flex items-center gap-1.5">
@@ -435,7 +435,7 @@ export function CitizenDashboardPage() {
           <Button
             variant="outline"
             onClick={handleLogout}
-            className="h-11 rounded-xl font-semibold gap-1.5 flex-1 md:flex-initial text-slate-700"
+            className="h-11 rounded-xl font-bold gap-1.5 flex-1 md:flex-initial text-slate-900 border-slate-300 bg-white hover:bg-slate-100"
           >
             <LogOut className="h-4 w-4" />
             <span>{lang === "ta" ? "வெளியேறு" : "Logout"}</span>
@@ -450,10 +450,10 @@ export function CitizenDashboardPage() {
               <AlertCircle className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-sm font-bold text-amber-900">
+              <p className="text-sm font-black text-amber-950">
                 {lang === "ta" ? "உங்கள் உறுதிப்படுத்தல் தேவை!" : "Action Required: Verify Resolution"}
               </p>
-              <p className="text-xs text-amber-700 mt-0.5">
+              <p className="text-xs text-amber-900 font-bold mt-0.5">
                 {awaitingVerification.length}{" "}
                 {lang === "ta"
                   ? "புகார்(கள்) கள அலுவலரால் முடிக்கப்பட்டுள்ளது. பிரச்சினை தீர்க்கப்பட்டதா என உறுதிப்படுத்தவும்."
@@ -517,38 +517,38 @@ export function CitizenDashboardPage() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-5">
-        <TabsList className="bg-muted/70 p-1 rounded-2xl h-auto flex flex-wrap gap-1">
-          <TabsTrigger value="complaints" className="rounded-xl text-xs font-bold py-2.5 px-4 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+        <TabsList className="bg-slate-200/70 p-1 rounded-2xl h-auto flex flex-wrap gap-1">
+          <TabsTrigger value="complaints" className="rounded-xl text-xs font-black py-2.5 px-4 text-slate-800 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm">
             <FileText className="h-3.5 w-3.5 mr-1.5" />
             {lang === "ta" ? "எனது புகார்கள்" : "My Complaints"} ({total})
           </TabsTrigger>
-          <TabsTrigger value="notifications" className="rounded-xl text-xs font-bold py-2.5 px-4 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+          <TabsTrigger value="notifications" className="rounded-xl text-xs font-black py-2.5 px-4 text-slate-800 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm">
             <Bell className="h-3.5 w-3.5 mr-1.5" />
             {lang === "ta" ? "அறிவிப்புகள்" : "Notifications"}
           </TabsTrigger>
-          <TabsTrigger value="appointments" className="rounded-xl text-xs font-bold py-2.5 px-4 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+          <TabsTrigger value="appointments" className="rounded-xl text-xs font-black py-2.5 px-4 text-slate-800 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm">
             <Users className="h-3.5 w-3.5 mr-1.5" />
             {lang === "ta" ? "எனது சந்திப்புகள்" : "Appointments"}
           </TabsTrigger>
-          <TabsTrigger value="schemes" className="rounded-xl text-xs font-bold py-2.5 px-4 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+          <TabsTrigger value="schemes" className="rounded-xl text-xs font-black py-2.5 px-4 text-slate-800 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm">
             <Star className="h-3.5 w-3.5 mr-1.5" />
             {lang === "ta" ? "அரசு திட்டங்கள்" : "Schemes"}
           </TabsTrigger>
-          <TabsTrigger value="profile" className="rounded-xl text-xs font-bold py-2.5 px-4 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+          <TabsTrigger value="profile" className="rounded-xl text-xs font-black py-2.5 px-4 text-slate-800 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm">
             <UserCheck className="h-3.5 w-3.5 mr-1.5" />
             {lang === "ta" ? "சுயவிவரம்" : "Profile"}
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="complaints" className="space-y-4">
-          <div className="rounded-2xl border border-border bg-white shadow-sm p-4 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
+          <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-4 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
             <div className="relative flex-1 min-w-0">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
               <Input
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
                 placeholder={lang === "ta" ? "புகார் ID / விவரம் / முகவரி..." : "Search by ID, description, or address..."}
-                className="h-10 pl-10 rounded-xl text-sm"
+                className="h-10 pl-10 rounded-xl text-sm font-semibold text-slate-950 bg-white border-slate-300 placeholder:text-slate-400"
               />
             </div>
             <div className="flex items-center gap-2 overflow-x-auto">
@@ -563,10 +563,10 @@ export function CitizenDashboardPage() {
                 <button
                   key={f.id}
                   onClick={() => setFilterStatus(f.id)}
-                  className={`shrink-0 px-3 py-2 rounded-xl text-[11px] font-bold border transition-all ${
+                  className={`shrink-0 px-3 py-2 rounded-xl text-[11px] font-black border transition-all ${
                     filterStatus === f.id
                       ? "bg-primary text-white border-primary shadow-sm"
-                      : "bg-white text-slate-700 border-slate-200 hover:border-primary/40 hover:text-primary"
+                      : "bg-white text-slate-800 border-slate-300 hover:border-primary/40 hover:text-primary"
                   }`}
                 >
                   {lang === "ta" ? f.label.ta : f.label.en}
@@ -612,40 +612,40 @@ export function CitizenDashboardPage() {
                   <Card
                     key={c.id}
                     onClick={() => setSelectedComplaint(c)}
-                    className="border-border hover:border-primary/50 shadow-sm hover:shadow-md transition-all cursor-pointer rounded-2xl overflow-hidden group"
+                    className="border-slate-200 bg-white hover:border-primary/50 shadow-sm hover:shadow-md transition-all cursor-pointer rounded-2xl overflow-hidden group"
                   >
                     <CardContent className="p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
                       <div className="space-y-2 flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-xs font-mono font-bold text-primary">{c.id}</span>
-                          <Badge className={`text-[11px] font-bold border-0 ${badgeStyle.bg} ${badgeStyle.text}`}>
+                          <span className="text-xs font-mono font-black text-primary">{c.id}</span>
+                          <Badge className={`text-[11px] font-extrabold border-0 ${badgeStyle.bg} ${badgeStyle.text}`}>
                             {meta ? bi(meta.label) : c.status.replace("_", " ")}
                           </Badge>
-                          <span className="text-xs text-muted-foreground flex items-center gap-1 font-medium">
+                          <span className="text-xs text-slate-700 flex items-center gap-1 font-bold">
                             <Calendar className="h-3 w-3" />
                             {c.createdAt}
                           </span>
                           {c.updatedAt && c.updatedAt !== c.createdAt && (
-                            <span className="text-[11px] text-slate-500 flex items-center gap-0.5">
+                            <span className="text-[11px] text-slate-600 font-semibold flex items-center gap-0.5">
                               <RefreshCw className="h-3 w-3" />
                               {lang === "ta" ? "புதுப்பிக்கப்பட்டது:" : "Updated:"} {c.updatedAt}
                             </span>
                           )}
                         </div>
 
-                        <h3 className="text-sm sm:text-base font-bold text-foreground group-hover:text-primary transition-colors line-clamp-1">
+                        <h3 className="text-sm sm:text-base font-black text-slate-950 group-hover:text-primary transition-colors line-clamp-1">
                           {cat ? bi(cat.name) : c.categoryId}: {c.description}
                         </h3>
 
-                        <div className="flex items-center gap-x-3 gap-y-1 text-xs text-muted-foreground flex-wrap">
+                        <div className="flex items-center gap-x-3 gap-y-1 text-xs text-slate-800 font-medium flex-wrap">
                           <span className="flex items-center gap-1">
-                            <MapPin className="h-3 w-3 text-primary shrink-0" />
-                            <span className="line-clamp-1">{c.address}</span>
+                            <MapPin className="h-3.5 w-3.5 text-primary shrink-0" />
+                            <span className="line-clamp-1 font-semibold">{c.address}</span>
                           </span>
                           <span>•</span>
-                          <span>Ward {ward?.number || 110}</span>
+                          <span className="font-bold">Ward {ward?.number || 110}</span>
                           <span>•</span>
-                          <span className="font-semibold text-slate-700">
+                          <span className="font-extrabold text-slate-900">
                             {dept ? bi(dept.name) : "Public Works"}
                           </span>
                           {c.officer && (
@@ -901,9 +901,9 @@ export function CitizenDashboardPage() {
                   <div>
                     <DialogTitle className="text-lg sm:text-xl font-black font-display text-foreground flex items-center gap-2">
                       <span className="font-mono">{selectedComplaint.id}</span>
-                      <Badge className={`text-[11px] font-bold border-0 ${STATUS_BADGES[selectedComplaint.status]?.bg} ${STATUS_BADGES[selectedComplaint.status]?.text}`}>
-                        {STATUS_META[selectedComplaint.status]
-                          ? bi(STATUS_META[selectedComplaint.status].label)
+                      <Badge className={`text-[11px] font-bold border-0 ${STATUS_BADGES[selectedComplaint.status]?.bg || "bg-slate-100"} ${STATUS_BADGES[selectedComplaint.status]?.text || "text-slate-800"}`}>
+                        {STATUS_META[selectedComplaint.status]?.label
+                          ? bi(STATUS_META[selectedComplaint.status]!.label)
                           : selectedComplaint.status.replace("_", " ")}
                       </Badge>
                     </DialogTitle>

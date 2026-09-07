@@ -64,8 +64,8 @@ export function ConstituencyMap({ isCompact = false }: { isCompact?: boolean }) 
           </h2>
           <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
             {lang === "ta"
-              ? "ஆயிரம் விளக்கு தொகுதியின் நேரடி வரைபடம் மற்றும் புகார்கள்"
-              : "Live interactive map of Thousand Lights Constituency and civic issues"}
+              ? "திருச்செங்கோடு தொகுதியின் நேரடி வரைபடம் மற்றும் புகார்கள்"
+              : "Live interactive map of Tiruchengode Constituency and civic issues"}
           </p>
         </div>
 
@@ -131,7 +131,7 @@ export function ConstituencyMap({ isCompact = false }: { isCompact?: boolean }) 
           {/* Left / Top 2 Cols: Real Google Map */}
           <div className="lg:col-span-2 relative min-h-[300px] lg:min-h-[460px] bg-slate-100">
             <iframe
-              title="Thousand Lights Constituency Map"
+              title="Tiruchengode Constituency Map"
               src={googleMapUrl}
               className="absolute inset-0 w-full h-full border-0 filter saturate-[0.95]"
               loading="lazy"

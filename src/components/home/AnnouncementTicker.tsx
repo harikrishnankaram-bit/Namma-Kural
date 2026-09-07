@@ -20,47 +20,47 @@ const CATEGORY_STYLES: Record<
   { badge: string; accent: string; bg: string; dot: string }
 > = {
   development: {
-    badge: "bg-emerald-100 text-emerald-800 border-emerald-200",
-    accent: "border-l-emerald-500",
-    bg: "bg-emerald-50/30",
-    dot: "bg-emerald-500",
+    badge: "bg-emerald-100 text-emerald-950 border-emerald-300 font-bold",
+    accent: "border-l-emerald-600",
+    bg: "bg-emerald-50/60",
+    dot: "bg-emerald-600",
   },
   scheme: {
-    badge: "bg-amber-100 text-amber-800 border-amber-200",
-    accent: "border-l-amber-500",
-    bg: "bg-amber-50/30",
-    dot: "bg-amber-500",
+    badge: "bg-amber-100 text-amber-950 border-amber-300 font-bold",
+    accent: "border-l-amber-600",
+    bg: "bg-amber-50/60",
+    dot: "bg-amber-600",
   },
   notice: {
-    badge: "bg-blue-100 text-blue-800 border-blue-200",
-    accent: "border-l-blue-500",
-    bg: "bg-blue-50/20",
-    dot: "bg-blue-500",
+    badge: "bg-blue-100 text-blue-950 border-blue-300 font-bold",
+    accent: "border-l-blue-600",
+    bg: "bg-blue-50/60",
+    dot: "bg-blue-600",
   },
   announcement: {
-    badge: "bg-sky-100 text-sky-800 border-sky-200",
-    accent: "border-l-sky-500",
-    bg: "bg-sky-50/20",
-    dot: "bg-sky-500",
+    badge: "bg-sky-100 text-sky-950 border-sky-300 font-bold",
+    accent: "border-l-sky-600",
+    bg: "bg-sky-50/60",
+    dot: "bg-sky-600",
   },
   event: {
-    badge: "bg-violet-100 text-violet-800 border-violet-200",
-    accent: "border-l-violet-500",
-    bg: "bg-violet-50/20",
-    dot: "bg-violet-500",
+    badge: "bg-violet-100 text-violet-950 border-violet-300 font-bold",
+    accent: "border-l-violet-600",
+    bg: "bg-violet-50/60",
+    dot: "bg-violet-600",
   },
   alert: {
-    badge: "bg-rose-100 text-rose-800 border-rose-200",
-    accent: "border-l-rose-500",
-    bg: "bg-rose-50/20",
-    dot: "bg-rose-500",
+    badge: "bg-rose-100 text-rose-950 border-rose-300 font-bold",
+    accent: "border-l-rose-600",
+    bg: "bg-rose-50/60",
+    dot: "bg-rose-600",
   },
 };
 
 const DEFAULT_STYLE = {
-  badge: "bg-sky-100 text-sky-800 border-sky-200",
+  badge: "bg-sky-100 text-sky-950 border-sky-300 font-bold",
   accent: "border-l-primary",
-  bg: "bg-sky-50/20",
+  bg: "bg-sky-50/60",
   dot: "bg-primary",
 };
 
@@ -204,14 +204,14 @@ export function AnnouncementTicker() {
       {/* ── Section Header ── */}
       <div className="flex items-center justify-between mb-4 px-0.5">
         <div className="flex items-center gap-2.5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary shrink-0">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-400/20 text-[#ffb703] shrink-0 border border-amber-400/30">
             <Bell className="h-5 w-5" />
           </div>
           <div>
-            <h2 className="text-base sm:text-lg font-bold text-foreground tracking-tight">
+            <h2 className="text-base sm:text-lg font-bold text-white tracking-tight">
               {lang === "ta" ? "சமீபத்திய அறிவிப்புகள்" : "Latest Announcements"}
             </h2>
-            <p className="text-xs text-muted-foreground hidden sm:block">
+            <p className="text-xs text-slate-200 hidden sm:block">
               {lang === "ta"
                 ? "தொகுதியில் இருந்து முக்கிய அறிவிப்புகள்"
                 : "Important public notices from your constituency"}
@@ -223,7 +223,7 @@ export function AnnouncementTicker() {
         <div className="flex items-center gap-1.5">
           <button
             onClick={() => setIsPaused((p) => !p)}
-            className="h-8 w-8 flex items-center justify-center rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            className="h-8 w-8 flex items-center justify-center rounded-lg border border-amber-400/30 text-amber-300 hover:text-white hover:bg-[#d91c2b] transition-colors shadow-sm"
             aria-label={isPaused ? "Play announcements" : "Pause announcements"}
             title={isPaused ? "Play" : "Pause"}
           >
@@ -231,14 +231,14 @@ export function AnnouncementTicker() {
           </button>
           <button
             onClick={goPrev}
-            className="h-8 w-8 flex items-center justify-center rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            className="h-8 w-8 flex items-center justify-center rounded-lg border border-amber-400/30 text-amber-300 hover:text-white hover:bg-[#d91c2b] transition-colors shadow-sm"
             aria-label="Previous announcement"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
           <button
             onClick={goNext}
-            className="h-8 w-8 flex items-center justify-center rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            className="h-8 w-8 flex items-center justify-center rounded-lg border border-amber-400/30 text-amber-300 hover:text-white hover:bg-[#d91c2b] transition-colors shadow-sm"
             aria-label="Next announcement"
           >
             <ChevronRight className="h-4 w-4" />
@@ -248,7 +248,7 @@ export function AnnouncementTicker() {
 
       {/* ── Slide Window ── */}
       <div
-        className="relative overflow-hidden rounded-2xl border border-border bg-white shadow-sm"
+        className="relative overflow-hidden rounded-2xl border border-amber-400/30 bg-white shadow-xl text-slate-950"
         style={{ isolation: "isolate" }}
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
@@ -278,41 +278,37 @@ export function AnnouncementTicker() {
                 <Badge className={`text-[11px] font-bold border uppercase tracking-wide ${style.badge}`}>
                   {bi(item.category)}
                 </Badge>
-                <span className="text-xs text-muted-foreground font-medium">
+                <span className="text-xs text-slate-700 font-semibold">
                   {item.date}
                 </span>
               </div>
-              <span className="text-xs text-muted-foreground font-semibold tabular-nums">
+              <span className="text-xs text-slate-800 font-bold tabular-nums">
                 {displayIndex + 1} / {total}
               </span>
             </div>
 
-            {/* Title */}
-            <h3 className="font-black text-foreground text-lg sm:text-xl leading-snug mb-3 font-display">
+            {/* Title (explicit dark text so text-white parent never turns it white!) */}
+            <h3 className="font-black text-slate-950 text-lg sm:text-xl leading-snug mb-3 font-display">
               {bi(item.title)}
             </h3>
 
-            {/* Description — allow multi-line */}
-            <p className="text-sm sm:text-base text-muted-foreground leading-relaxed mb-5">
+            {/* Description — explicit dark text */}
+            <p className="text-sm sm:text-base text-slate-800 leading-relaxed font-medium mb-5">
               {bi(item.description)}
             </p>
 
-            {/* Read More */}
-            <Button
-              asChild
-              size="sm"
-              variant="outline"
-              className="text-xs gap-1.5 h-9 border-primary/30 text-primary hover:bg-primary/5 hover:text-primary font-semibold rounded-lg"
+            {/* Read More button */}
+            <Link
+              to="/development"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#170204] hover:bg-[#d91c2b] text-white font-bold text-xs shadow-md border border-amber-400/40 transition-colors"
             >
-              <Link to="/development">
-                <span>{lang === "ta" ? "மேலும் படிக்க" : "Read More"}</span>
-                <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
-            </Button>
+              <span>{lang === "ta" ? "மேலும் படிக்க" : "Read More"}</span>
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
           </div>
 
           {/* Pagination row */}
-          <div className="bg-muted/40 px-5 sm:px-7 py-3 border-t border-border/50 flex items-center justify-between">
+          <div className="bg-slate-100 px-5 sm:px-7 py-3 border-t border-slate-200 flex items-center justify-between">
             <div className="flex items-center gap-2" role="tablist" aria-label="Announcement indicators">
               {updates.map((_, idx) => (
                 <button
@@ -322,15 +318,15 @@ export function AnnouncementTicker() {
                   onClick={() => goTo(idx)}
                   className={`h-2 rounded-full transition-all duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary ${
                     idx === displayIndex
-                      ? `w-7 ${style.dot}`
-                      : "w-2 bg-border hover:bg-muted-foreground"
+                      ? `w-7 bg-[#d91c2b]`
+                      : "w-2 bg-slate-300 hover:bg-slate-500"
                   }`}
                   aria-label={`Go to announcement ${idx + 1}`}
                 />
               ))}
             </div>
             {isPaused && (
-              <span className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wide">
+              <span className="text-[10px] text-slate-600 font-bold uppercase tracking-wide">
                 {lang === "ta" ? "இடைநிறுத்தப்பட்டது" : "Paused"}
               </span>
             )}
