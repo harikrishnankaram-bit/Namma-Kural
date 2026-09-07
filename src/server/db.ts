@@ -3,13 +3,17 @@ import * as fs from "fs";
 import * as path from "path";
 import * as dotenv from "dotenv";
 
-// Load .env explicitly from project root
-const envPath = path.resolve(process.cwd(), ".env");
-if (fs.existsSync(envPath)) {
-  const result = dotenv.parse(fs.readFileSync(envPath));
-  for (const k in result) {
-    process.env[k] = result[k];
+// Load .env explicitly from project root if available
+try {
+  const envPath = path.resolve(process.cwd(), ".env");
+  if (fs.existsSync(envPath)) {
+    const result = dotenv.parse(fs.readFileSync(envPath));
+    for (const k in result) {
+      process.env[k] = result[k];
+    }
   }
+} catch {
+  // Ignore in serverless / production environments
 }
 
 // Debug: confirm env loaded
