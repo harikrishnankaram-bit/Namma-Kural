@@ -38,15 +38,10 @@ export default defineConfig({
       },
     }),
     nitro({
-      preset: process.env.NITRO_PRESET || (process.env.VERCEL ? "vercel" : "node-server"),
+      preset: "vercel",
       alias: {
         "punycode/": "punycode",
         "punycode": "punycode",
-      },
-      output: {
-        dir: "dist",
-        serverDir: "dist/server",
-        publicDir: "dist/client",
       },
     }),
     react(),
