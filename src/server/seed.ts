@@ -2,10 +2,11 @@ import { getDb } from "./db";
 import { hashPassword } from "./auth";
 
 export async function initDefaultAdminUsers() {
-  const { users, announcements, schemes, developmentWorks } = await getDb();
+  try {
+    const { users, announcements, schemes, developmentWorks } = await getDb();
 
-  const defaultPassword = await hashPassword("Aram@2026");
-  const now = new Date().toISOString();
+    const defaultPassword = await hashPassword("Aram@2026");
+    const now = new Date().toISOString();
 
   const initialStaff = [
     {
@@ -412,6 +413,9 @@ export async function initDefaultAdminUsers() {
       createdAt: now,
       updatedAt: now,
     });
+  }
+  } catch (err) {
+    console.warn("[Seed] initDefaultAdminUsers encountered non-fatal error:", err);
   }
 }
 

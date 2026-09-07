@@ -359,20 +359,40 @@ class MemoryDatabase {
 
 const globalForDb = globalThis as unknown as {
   memoryDbSingleton?: MemoryDatabase;
-  clientPromise?: Promise<MongoClient> | null;
+  clientPromise?: Promise<MongoClient | null> | null;
+  useMemoryFallback?: boolean;
 };
 
 const memoryDbSingleton = globalForDb.memoryDbSingleton ?? new MemoryDatabase();
 globalForDb.memoryDbSingleton = memoryDbSingleton;
 
 let client: MongoClient | null = null;
-let clientPromise: Promise<MongoClient> | null = globalForDb.clientPromise ?? null;
-let useMemoryFallback = false;
+let clientPromise: Promise<MongoClient | null> | null = globalForDb.clientPromise ?? null;
+let useMemoryFallback = globalForDb.useMemoryFallback ?? false;
 
 const MONGODB_URI = process.env["MONGODB_URI"];
 if (!MONGODB_URI) {
   useMemoryFallback = true;
+  globalForDb.useMemoryFallback = true;
   console.log("[Database] MONGODB_URI not provided. Operating in local memory database mode.");
+}
+
+function getMemoryDbResult() {
+  return {
+    db: null,
+    isMemory: true,
+    citizens: memoryDbSingleton.citizens,
+    complaintUpdates: memoryDbSingleton.complaintUpdates,
+    complaints: memoryDbSingleton.complaints,
+    users: memoryDbSingleton.users,
+    notifications: memoryDbSingleton.notifications,
+    appointments: memoryDbSingleton.appointments,
+    otps: memoryDbSingleton.otps,
+    auditLogs: memoryDbSingleton.auditLogs,
+    announcements: memoryDbSingleton.announcements,
+    schemes: memoryDbSingleton.schemes,
+    developmentWorks: memoryDbSingleton.developmentWorks,
+  };
 }
 
 export async function getDb(): Promise<{
@@ -390,22 +410,8 @@ export async function getDb(): Promise<{
   schemes: Collection<SchemeDoc> | MemoryCollection<SchemeDoc>;
   developmentWorks: Collection<DevelopmentWorkDoc> | MemoryCollection<DevelopmentWorkDoc>;
 }> {
-  if (useMemoryFallback) {
-    return {
-      db: null,
-      isMemory: true,
-      citizens: memoryDbSingleton.citizens,
-      complaintUpdates: memoryDbSingleton.complaintUpdates,
-      complaints: memoryDbSingleton.complaints,
-      users: memoryDbSingleton.users,
-      notifications: memoryDbSingleton.notifications,
-      appointments: memoryDbSingleton.appointments,
-      otps: memoryDbSingleton.otps,
-      auditLogs: memoryDbSingleton.auditLogs,
-      announcements: memoryDbSingleton.announcements,
-      schemes: memoryDbSingleton.schemes,
-      developmentWorks: memoryDbSingleton.developmentWorks,
-    };
+  if (useMemoryFallback || globalForDb.useMemoryFallback) {
+    return getMemoryDbResult();
   }
 
   try {
@@ -414,9 +420,25 @@ export async function getDb(): Promise<{
         serverSelectionTimeoutMS: 2000,
         connectTimeoutMS: 2000,
       });
-      clientPromise = client.connect();
+      clientPromise = client.connect().catch((err) => {
+        console.warn("[Database] MongoClient connection failed, falling back to memory database:", err?.message || err);
+        useMemoryFallback = true;
+        globalForDb.useMemoryFallback = true;
+        globalForDb.clientPromise = null;
+        clientPromise = null;
+        client = null;
+        return null;
+      });
+      globalForDb.clientPromise = clientPromise;
     }
+
     const connectedClient = await clientPromise;
+    if (!connectedClient) {
+      useMemoryFallback = true;
+      globalForDb.useMemoryFallback = true;
+      return getMemoryDbResult();
+    }
+
     const db = connectedClient.db("aram_constituency");
 
     // Ensure Indexes once connected
@@ -458,24 +480,12 @@ export async function getDb(): Promise<{
       developmentWorks: db.collection<DevelopmentWorkDoc>("developmentWorks"),
     };
   } catch (_err) {
+    globalForDb.clientPromise = null;
     clientPromise = null;
     client = null;
     useMemoryFallback = true;
+    globalForDb.useMemoryFallback = true;
     console.log("[Database] Remote MongoDB cluster unreachable. Switched seamlessly to local memory database mode.");
-    return {
-      db: null,
-      isMemory: true,
-      citizens: memoryDbSingleton.citizens,
-      complaintUpdates: memoryDbSingleton.complaintUpdates,
-      complaints: memoryDbSingleton.complaints,
-      users: memoryDbSingleton.users,
-      notifications: memoryDbSingleton.notifications,
-      appointments: memoryDbSingleton.appointments,
-      otps: memoryDbSingleton.otps,
-      auditLogs: memoryDbSingleton.auditLogs,
-      announcements: memoryDbSingleton.announcements,
-      schemes: memoryDbSingleton.schemes,
-      developmentWorks: memoryDbSingleton.developmentWorks,
-    };
+    return getMemoryDbResult();
   }
 }

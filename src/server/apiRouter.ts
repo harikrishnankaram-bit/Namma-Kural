@@ -13,7 +13,11 @@ export async function handleApiRequest(request: Request): Promise<Response | nul
   }
 
   // Auto seed admin users if database is empty
-  await initDefaultAdminUsers();
+  try {
+    await initDefaultAdminUsers();
+  } catch (seedErr) {
+    console.warn("Auto-seed error swallowed safely:", seedErr);
+  }
 
   const method = request.method.toUpperCase();
 
