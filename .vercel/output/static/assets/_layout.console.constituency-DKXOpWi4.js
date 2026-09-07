@@ -1,0 +1,1 @@
+import{i as e}from"./index-CL8pbNOc.js";var t=e;export{t as component};
