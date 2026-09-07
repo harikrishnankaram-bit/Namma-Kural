@@ -38,7 +38,7 @@ export default defineConfig({
       },
     }),
     nitro({
-      preset: "cloudflare-module",
+      preset: process.env.NITRO_PRESET || (process.env.VERCEL ? "vercel" : "node-server"),
       alias: {
         "punycode/": "punycode",
         "punycode": "punycode",
@@ -47,10 +47,6 @@ export default defineConfig({
         dir: "dist",
         serverDir: "dist/server",
         publicDir: "dist/client",
-      },
-      cloudflare: {
-        nodeCompat: true,
-        deployConfig: true,
       },
     }),
     react(),
