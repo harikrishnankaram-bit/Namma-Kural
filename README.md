@@ -74,7 +74,7 @@ ARAM login experience
 
 ARAM dashboard identity
 
-Do not use Lovable branding or any third-party builder branding.
+Do not use third-party builder branding.
 
 Do not make the application look like a generic SaaS dashboard.
 
@@ -1126,16 +1126,6 @@ Build status
 Remaining backend requirements
 
 Recommended next development phase
-
-This project was built with [Lovable](https://lovable.dev).
-
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/3e19d622-72a9-43bd-8d43-682110599ffd).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
 
 ## Development
 
