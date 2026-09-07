@@ -62,10 +62,13 @@ console.error = (...args: unknown[]) => {
   originalConsoleError(...expanded);
 };
 
-if (typeof globalThis.addEventListener === "function") {
-  globalThis.addEventListener("error", (event) => record((event as ErrorEvent).error ?? event));
-  globalThis.addEventListener("unhandledrejection", (event) =>
-    record((event as PromiseRejectionEvent).reason),
+if (typeof process !== "undefined" && typeof process.on === "function") {
+  process.on("uncaughtException", (err) => record(err));
+  process.on("unhandledRejection", (reason) => record(reason));
+} else if (typeof globalThis.addEventListener === "function") {
+  globalThis.addEventListener("error", (event: any) => record(event.error ?? event));
+  globalThis.addEventListener("unhandledrejection", (event: any) =>
+    record(event.reason ?? event),
   );
 }
 
