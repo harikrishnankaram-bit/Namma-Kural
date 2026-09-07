@@ -6,6 +6,12 @@ import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import { nitro } from "nitro/vite";
 
 export default defineConfig({
+  oxc: {
+    jsx: {
+      runtime: "automatic",
+      development: false,
+    },
+  },
   server: {
     host: "::",
     port: 8080,
@@ -19,14 +25,11 @@ export default defineConfig({
       "react",
       "react-dom",
       "react/jsx-runtime",
-      "react/jsx-dev-runtime",
       "@tanstack/react-query",
       "@tanstack/query-core",
     ],
   },
   plugins: [
-    tailwindcss(),
-    tsconfigPaths({ projects: ["./tsconfig.json"] }),
     tanstackStart({
       server: { entry: "server" },
       importProtection: {
@@ -37,6 +40,12 @@ export default defineConfig({
         },
       },
     }),
+    react({
+      jsxRuntime: "automatic",
+      development: false,
+    }),
+    tailwindcss(),
+    tsconfigPaths({ projects: ["./tsconfig.json"] }),
     nitro({
       preset: "vercel",
       alias: {
@@ -44,7 +53,6 @@ export default defineConfig({
         "punycode": "punycode",
       },
     }),
-    react(),
     {
       name: "api-dev-middleware",
       configureServer(server) {
